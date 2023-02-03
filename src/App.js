@@ -5,6 +5,7 @@ import Sidebar from "./sidebar/sidebar.component";
 import MarketplacePage from "./marketplace/marketplace.page";
 import PublishPage from "./publish/publish.page";
 import LabPage from "./lab/lab.page";
+import AssetPage from "./Consume/asset.page";
 import { createContext, useState } from "react";
 import { QueryClient, QueryClientProvider } from "react-query";
 import { ConfigHelper } from "@oceanprotocol/lib";
@@ -30,6 +31,7 @@ function App() {
                             <Route path="/" element={<MarketplacePage />}></Route>
                             <Route path="publish" element={<PublishPage />}></Route>
                             <Route path="lab" element={<LabPage />}></Route>
+                            <Route path="asset" element={<AssetPage />}></Route>
                         </Routes>
                     </QueryClientProvider>
                 </OceanConfigContext.Provider>

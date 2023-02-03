@@ -149,51 +149,60 @@ const PublishPage = () => {
     };
 
     return (
-        <div>
-            <p>Enter Data Details</p>
-            <form>
-                <label>Name:</label>{" "}
-                <input className="border" type="text" name={"name"} value={name} onChange={setPublishDetails}></input>
-                <br />
-                <label>Symbol:</label>
-                <input
-                    className="border"
-                    type="text"
-                    name={"symbol"}
-                    value={symbol}
-                    onChange={setPublishDetails}
-                ></input>
-                <br />
-                <label>Description:</label>
-                <input
-                    className="border"
-                    type="text"
-                    name={"description"}
-                    value={description}
-                    onChange={setPublishDetails}
-                ></input>
-                <br />
-                <label>Author:</label>
-                <input
-                    className="border"
-                    type="text"
-                    name={"author"}
-                    value={author}
-                    onChange={setPublishDetails}
-                ></input>
-                <br />
-                <label>File URL:</label>{" "}
-                <input
-                    className="border"
-                    type="text"
-                    name={"fileUrl"}
-                    value={fileUrl}
-                    onChange={setPublishDetails}
-                ></input>
-                <br />
+
+        <div class=" flex flex-col justify-center items-center">
+            <form >
+                <div className="shadow sm:overflow-hidden sm:rounded-md">
+                    <div className="space-y-6 bg-white px-4 py-5 sm:p-6">
+
+                        <div className="col-span-3 sm:col-span-2">
+                            <label className="block text-sm font-medium text-gray-700">Data Asset Name</label>
+                            <div className="mt-1 flex rounded-md  shadow-sm">
+                                <input value={name} onChange={setPublishDetails} type="text" name="name" id="name" className="block w-full flex-1 rounded-none rounded-r-md border-grey-300 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" placeholder="Sample Data Name" />
+                            </div>
+                        </div>
+
+                        <div className="col-span-3 sm:col-span-2">
+                            <label className="block text-sm font-medium text-gray-700">NFT Symbol Name</label>
+                            <div className="mt-1 flex rounded-md shadow-sm">
+                                <input value={symbol} onChange={setPublishDetails} type="text" name="symbol" id="symbol" className="block w-full flex-1 rounded-none rounded-r-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" />
+                            </div>
+                        </div>
+
+                        <div className="col-span-3 sm:col-span-2">
+                            <label className="block text-sm font-medium text-gray-700">Author</label>
+                            <div className="mt-1 flex rounded-md shadow-sm">
+                                <input value={author} onChange={setPublishDetails} type="text" name="author" id="author" className="block w-full flex-1 rounded-none rounded-r-md border-grey-300 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" placeholder="Sample Data Name" />
+                            </div>
+                        </div>
+
+
+                        <div className="col-span-3 sm:col-span-2">
+                            <label className="block text-sm font-medium text-gray-700">Data Asset URL</label>
+                            <div className="mt-1 flex rounded-md shadow-sm">
+                                <span className="inline-flex items-center rounded-l-md border border-r-0 border-gray-300 bg-gray-50 px-3 text-sm text-gray-500">http://</span>
+                                <input value={fileUrl} onChange={setPublishDetails} type="text" name="fileUrl" id="fileUrl" className="block w-full flex-1 rounded-none rounded-r-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" placeholder="www.example.com" />
+                            </div>
+                        </div>
+
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700">Description</label>
+                            <div className="mt-1">
+                                <textarea value={description} onChange={setPublishDetails} id="description" name="description" rows="3" className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" placeholder="you@example.com"></textarea>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+                
             </form>
-            <button onClick={createNft}>Publish</button>
+            <div className="bg-gray-50 px-4 py-3 text-center sm:px-6">
+                    <button onClick={createNft} type="submit" className="inline-flex justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">Publish</button>
+                </div>
+
         </div>
+
     );
 };
 
