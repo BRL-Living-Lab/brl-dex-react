@@ -1,11 +1,21 @@
 import { Aquarius, Datatoken, Nft, NftFactory, ProviderInstance, ZERO_ADDRESS, generateDid } from "@oceanprotocol/lib";
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import { AccountContext, OceanConfigContext } from "../App";
 import Web3 from "web3";
 
 const PublishPage = () => {
     const { oceanConfig } = useContext(OceanConfigContext);
     const { currentAccount, _ } = useContext(AccountContext);
+
+    const [formData, setFormData] = useState({
+        name: "",
+        symbol: "",
+        description: "",
+        author: "",
+        fileUrl: "",
+    });
+
+    const { name, symbol, description, author, fileUrl } = formData;
 
     const DATASET_ASSET_URL = {
         datatokenAddress: "0x0",
@@ -118,9 +128,10 @@ const PublishPage = () => {
     };
 
     const createNft = async () => {
+        DATASET_ASSET_URL.files[0].url = fileUrl;
         let datasetId = await createAsset(
-            "D1Min",
-            "D1M",
+            name,
+            symbol,
             currentAccount,
             DATASET_ASSET_URL,
             DATASET_DDO,
@@ -130,9 +141,57 @@ const PublishPage = () => {
         // console.log(`dataset id: ${datasetId}`);
     };
 
+    const setPublishDetails = (e) => {
+        setFormData((prevState) => ({
+            ...prevState,
+            [e.target.name]: e.target.value,
+        }));
+    };
+
     return (
         <div>
-            <p>Publish Page</p>
+            <p>Enter Data Details</p>
+            <form>
+                <label>Name:</label>{" "}
+                <input className="border" type="text" name={"name"} value={name} onChange={setPublishDetails}></input>
+                <br />
+                <label>Symbol:</label>
+                <input
+                    className="border"
+                    type="text"
+                    name={"symbol"}
+                    value={symbol}
+                    onChange={setPublishDetails}
+                ></input>
+                <br />
+                <label>Description:</label>
+                <input
+                    className="border"
+                    type="text"
+                    name={"description"}
+                    value={description}
+                    onChange={setPublishDetails}
+                ></input>
+                <br />
+                <label>Author:</label>
+                <input
+                    className="border"
+                    type="text"
+                    name={"author"}
+                    value={author}
+                    onChange={setPublishDetails}
+                ></input>
+                <br />
+                <label>File URL:</label>{" "}
+                <input
+                    className="border"
+                    type="text"
+                    name={"fileUrl"}
+                    value={fileUrl}
+                    onChange={setPublishDetails}
+                ></input>
+                <br />
+            </form>
             <button onClick={createNft}>Publish</button>
         </div>
     );
