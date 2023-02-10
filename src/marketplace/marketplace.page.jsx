@@ -46,16 +46,16 @@ const MarketplacePage = () => {
 
     return (
         <div>
-            <p>Marketplace Page</p>
             {isLoading ? (
                 <p>Loading</p>
             ) : (
-                <div>
+                <div className="float-right">
                     {nfts.map((nft) => (
-                        <div key={nft.id}>
+                        <div key={nft.id} className="w-1/4 inline-block">
                             Symbol: {nft.symbol} <br />
                             Name: {nft.name} <br />
                             Address: {nft.address}
+                            <br />
                             Creator: {nft.creator.id}
                             <br />
                             Owner: {nft.owner.id}
