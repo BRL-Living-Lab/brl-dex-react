@@ -45,7 +45,7 @@ const PublishPage = () => {
             description: description,
             author: author,
             license: "https://market.oceanprotocol.com/terms",
-            links: [sampleFileURL],
+            link: sampleFileURL,
             additionalInformation: {
                 termsAndConditions: true,
             },
