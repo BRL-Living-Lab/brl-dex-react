@@ -5,7 +5,7 @@ import Web3 from "web3";
 
 const PublishPage = () => {
     const { oceanConfig } = useContext(OceanConfigContext);
-    const { currentAccount, _ } = useContext(AccountContext);
+    const { currentAccount } = useContext(AccountContext);
 
     const [formData, setFormData] = useState({
         name: "",
@@ -45,7 +45,7 @@ const PublishPage = () => {
             description: description,
             author: author,
             license: "https://market.oceanprotocol.com/terms",
-            link: sampleFileURL,
+            links: [sampleFileURL],
             additionalInformation: {
                 termsAndConditions: true,
             },
@@ -129,6 +129,12 @@ const PublishPage = () => {
 
             ddo.nftAddress = web3.utils.toChecksumAddress(nftAddress);
             ddo.id = generateDid(nftAddress, chain);
+
+            //created and updated date in UTC
+            const currTime = new Date().toISOString();
+            ddo.metadata.created = currTime;
+            ddo.metadata.updated = currTime;
+
             providerResponse = await ProviderInstance.encrypt(ddo, providerUrl);
             const encryptedResponse = await providerResponse;
             const validateResult = await aquarius.validate(ddo);
