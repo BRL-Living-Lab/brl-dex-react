@@ -13,9 +13,11 @@ const PublishPage = () => {
         description: "",
         author: "",
         fileUrl: "",
+        providerURL: "",
+        sampleFileURL: "",
     });
 
-    const { name, symbol, description, author, fileUrl } = formData;
+    const { name, symbol, description, author, fileUrl, providerURL, sampleFileURL, denyAccnts } = formData;
 
     const DATASET_ASSET_URL = {
         datatokenAddress: "0x0",
@@ -39,10 +41,11 @@ const PublishPage = () => {
             created: "2021-12-20T14:35:20Z",
             updated: "2021-12-20T14:35:20Z",
             type: "dataset",
-            name: "dataset-name",
-            description: "Ocean protocol test dataset description",
-            author: "oceanprotocol-team",
+            name: name,
+            description: description,
+            author: author,
             license: "https://market.oceanprotocol.com/terms",
+            link: sampleFileURL,
             additionalInformation: {
                 termsAndConditions: true,
             },
@@ -65,7 +68,7 @@ const PublishPage = () => {
         ],
     };
 
-    const createAsset = async (name, symbol, owner, assetUrl, ddo, providerUrl) => {
+    const createAsset = async (name, symbol, owner, assetUrl, ddo, providerUrl, sampleFileURL) => {
         console.log(owner);
         if (window.ethereum) {
             const aquarius = new Aquarius(oceanConfig.metadataCacheUri);
@@ -79,10 +82,10 @@ const PublishPage = () => {
             ddo.chainId = chain;
 
             const nftParamsAsset = {
-                name,
-                symbol,
+                name: "BRL Data NFT",
+                symbol: "BRL-NFT",
                 templateIndex: 1,
-                tokenURI: "aaa",
+                tokenURI: "",
                 transferable: true,
                 owner,
             };
@@ -98,9 +101,19 @@ const PublishPage = () => {
 
             const result = await Factory.createNftWithDatatoken(owner, nftParamsAsset, datatokenParams);
 
-            // // console.log(web3.eth.abi.decodeLog);
-
-            // // console.log(result.events[0]);
+            // handle deny permissions to accounts
+            if (denyAccnts !== "") {
+                const cred = {
+                    deny: [
+                        {
+                            type: "address",
+                            values: [denyAccnts]
+                        }
+                    ]
+                }
+                ddo.credentials = cred;
+        }
+                
 
             const nftAddress = result.events.NFTCreated.returnValues[0];
             const datatokenAddressAsset = result.events.TokenCreated.returnValues[0];
@@ -150,56 +163,78 @@ const PublishPage = () => {
 
     return (
 
-        <div class=" flex flex-col justify-center items-center">
-            <form >
-                <div className="shadow sm:overflow-hidden sm:rounded-md">
+        <div className=" w-full flex flex-col justify-center items-center lg:mx-auto lg:max-w-[58.75rem] lg:mt-20 lg:flex-col grow lg:p-4 lg:rounded-lg lg:bg-white lg:shadow">
+            <form className="w-full justify-center bg-neutral-alabaster px-6 py-9 rounded-[0.625rem] -translate-y-[4.5rem] flex grow [&_h2]:text-2xl [&_h2]:font-bold [&_h2]:text-primary-marine-blue [&_h3]:font-medium [&_h3]:text-primary-marine-blue lg:bg-transparent lg:translate-y-0">
+                <div className="w-full shadow sm:rounded-md">
                     <div className="space-y-6 bg-white px-4 py-5 sm:p-6">
 
-                        <div className="col-span-3 sm:col-span-2">
+                        <div>
                             <label className="block text-sm font-medium text-gray-700">Data Asset Name</label>
                             <div className="mt-1 flex rounded-md  shadow-sm">
-                                <input value={name} onChange={setPublishDetails} type="text" name="name" id="name" className="block w-full flex-1 rounded-none rounded-r-md border-grey-300 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" placeholder="Sample Data Name" />
+                                <input value={name} onChange={setPublishDetails} type="text" name="name" id="name" className=" w-full flex-1 rounded-none rounded-r-md border-grey-300 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" placeholder="Sample Data Name" />
                             </div>
                         </div>
 
-                        <div className="col-span-3 sm:col-span-2">
+                        <div >
+                            <label className="block text-sm font-medium text-gray-700">Author</label>
+                            <div className=" flex rounded-md shadow-sm">
+                                <input value={author} onChange={setPublishDetails} type="text" name="author" id="author" className=" w-full flex-1 rounded-none rounded-r-md border-grey-300 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" placeholder="Sample Data Name" />
+                            </div>
+                        </div>
+
+                        <div >
                             <label className="block text-sm font-medium text-gray-700">NFT Symbol Name</label>
                             <div className="mt-1 flex rounded-md shadow-sm">
-                                <input value={symbol} onChange={setPublishDetails} type="text" name="symbol" id="symbol" className="block w-full flex-1 rounded-none rounded-r-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" />
+                                <input value={symbol} onChange={setPublishDetails} type="text" name="symbol" id="symbol" className=" mt-1 w-full flex rounded-none rounded-r-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" />
                             </div>
                         </div>
 
-                        <div className="col-span-3 sm:col-span-2">
-                            <label className="block text-sm font-medium text-gray-700">Author</label>
-                            <div className="mt-1 flex rounded-md shadow-sm">
-                                <input value={author} onChange={setPublishDetails} type="text" name="author" id="author" className="block w-full flex-1 rounded-none rounded-r-md border-grey-300 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" placeholder="Sample Data Name" />
-                            </div>
-                        </div>
-
-
-                        <div className="col-span-3 sm:col-span-2">
+                        <div >
                             <label className="block text-sm font-medium text-gray-700">Data Asset URL</label>
                             <div className="mt-1 flex rounded-md shadow-sm">
                                 <span className="inline-flex items-center rounded-l-md border border-r-0 border-gray-300 bg-gray-50 px-3 text-sm text-gray-500">http://</span>
-                                <input value={fileUrl} onChange={setPublishDetails} type="text" name="fileUrl" id="fileUrl" className="block w-full flex-1 rounded-none rounded-r-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" placeholder="www.example.com" />
+                                <input value={fileUrl} onChange={setPublishDetails} type="text" name="fileUrl" id="fileUrl" className=" mt-1 w-full flex-1 rounded-none rounded-r-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" placeholder="www.example.com" />
+                            </div>
+                        </div>
+
+                        <div >
+                            <label className="block text-sm font-medium text-gray-700">Provider URL</label>
+                            <div className="mt-1 flex rounded-md shadow-sm">
+                                <span className="inline-flex items-center rounded-l-md border border-r-0 border-gray-300 bg-gray-50 px-3 text-sm text-gray-500">http://</span>
+                                <input value={providerURL} onChange={setPublishDetails} type="text" name="providerURL" id="providerURL" className=" w-full flex-1 rounded-none rounded-r-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" placeholder="www.example.com" />
+                            </div>
+                        </div>
+
+                        <div >
+                            <label className="block text-sm font-medium text-gray-700">Sample File URL</label>
+                            <div className="mt-1 flex rounded-md shadow-sm">
+                                <span className="inline-flex items-center rounded-l-md border border-r-0 border-gray-300 bg-gray-50 px-3 text-sm text-gray-500">http://</span>
+                                <input value={sampleFileURL} onChange={setPublishDetails} type="text" name="sampleFileURL" id="sampleFileURL" className=" w-full flex-1 rounded-none rounded-r-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" placeholder="www.example.com" />
                             </div>
                         </div>
 
                         <div>
                             <label className="block text-sm font-medium text-gray-700">Description</label>
                             <div className="mt-1">
-                                <textarea value={description} onChange={setPublishDetails} id="description" name="description" rows="3" className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" placeholder="you@example.com"></textarea>
+                                <textarea value={description} onChange={setPublishDetails} id="description" name="description" rows="3" className="mt-1  w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" placeholder="you@example.com"></textarea>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700">Deny Account</label>
+                            <div className="mt-1">
+                                <input value={denyAccnts} onChange={setPublishDetails} id="denyAccnts" name="denyAccnts" className="mt-1  w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" placeholder="you@example.com"></input>
                             </div>
                         </div>
 
                     </div>
 
                 </div>
-                
+
             </form>
             <div className="bg-gray-50 px-4 py-3 text-center sm:px-6">
-                    <button onClick={createNft} type="submit" className="inline-flex justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">Publish</button>
-                </div>
+                <button onClick={createNft} type="submit" className="inline-flex justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">Publish</button>
+            </div>
 
         </div>
 
