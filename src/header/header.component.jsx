@@ -26,7 +26,7 @@ const Header = () => {
     };
 
     return (
-        <div className="flex justify-between p-5">
+        <div className="flex justify-between p-5 relative top-0">
             <h1>Decentralized Data Marketplace</h1>
             {currentAccount ?? <button onClick={connectWalletHandler}>Connect Wallet</button>}
         </div>

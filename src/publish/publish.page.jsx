@@ -19,10 +19,24 @@ const PublishPage = () => {
         assetType: "",
         timeout: null,
         serviceType: "",
-        serviceName: ""
+        serviceName: "",
     });
 
-    const { name, symbol, nftName, description, author, fileUrl, providerURL, sampleFileURL, denyAccnts, assetType, timeout, serviceType, serviceName } = formData;
+    const {
+        name,
+        symbol,
+        nftName,
+        description,
+        author,
+        fileUrl,
+        providerURL,
+        sampleFileURL,
+        denyAccnts,
+        assetType,
+        timeout,
+        serviceType,
+        serviceName,
+    } = formData;
 
     const DATASET_ASSET_URL = {
         datatokenAddress: "0x0",
@@ -35,8 +49,6 @@ const PublishPage = () => {
             },
         ],
     };
-
-
 
     const DATASET_DDO = {
         "@context": ["https://w3id.org/did/v1"],
@@ -56,20 +68,20 @@ const PublishPage = () => {
             links: sampleFileURL, // array of sample urls
             additionalInformation: {
                 termsAndConditions: true,
-            }
-
+            },
         },
         services: [
             {
                 id: "notAnId", //unique id
                 type: "compute", // access service - compute, download
                 files: "", // encrypted file urls
-                name: "",         //service friendly name
-                description: "",  //service description
+                name: "", //service friendly name
+                description: "", //service description
                 datatokenAddress: "0xa15024b732A8f2146423D14209eFd074e61964F3",
-                serviceEndpoint: "https://v4.provider.goerli.oceanprotocol.com/",  // Provider URL (schema + host)
+                serviceEndpoint: "https://v4.provider.goerli.oceanprotocol.com/", // Provider URL (schema + host)
                 timeout: 3000,
-                compute: {  // for compute assets only
+                compute: {
+                    // for compute assets only
                     publisherTrustedAlgorithmPublishers: [],
                     publisherTrustedAlgorithms: [],
                     allowRawAlgorithm: true,
@@ -78,8 +90,6 @@ const PublishPage = () => {
             },
         ],
     };
-
-
 
     const createAsset = async (name, symbol, owner, assetUrl, ddo, providerUrl, sampleFileURL) => {
         console.log(owner);
@@ -96,7 +106,7 @@ const PublishPage = () => {
 
             const nftParamsAsset = {
                 name: nftName, //Name of NFT set in contract
-                symbol: symbol,  //Symbol of NFT set in contract
+                symbol: symbol, //Symbol of NFT set in contract
                 templateIndex: 1,
                 tokenURI: "",
                 state: 0,
@@ -120,13 +130,12 @@ const PublishPage = () => {
 
             // Define metadata as per data set type
             if (assetType === "algorithmRadio") {
-
                 ddo.metadata.algorithm = {
                     language: "",
                     version: "",
                     consumerParameters: {},
-                    conatiner: {}
-                }
+                    conatiner: {},
+                };
             }
             // handle deny permissions to accounts
             if (denyAccnts !== "") {
@@ -134,14 +143,12 @@ const PublishPage = () => {
                     deny: [
                         {
                             type: "address",
-                            values: [denyAccnts]
-                        }
-                    ]
-                }
+                            values: [denyAccnts],
+                        },
+                    ],
+                };
                 ddo.credentials = cred;
             }
-
-
 
             ddo.nftAddress = web3.utils.toChecksumAddress(nftAddress);
             console.log({ nftAddress });
@@ -153,12 +160,13 @@ const PublishPage = () => {
             // define ddo service
 
             if (serviceType === "computeRadio") {
-                ddo.services[0].compute = {  // for compute assets only
+                ddo.services[0].compute = {
+                    // for compute assets only
                     publisherTrustedAlgorithmPublishers: [],
                     publisherTrustedAlgorithms: [],
                     allowRawAlgorithm: true,
                     allowNetworkAccess: true,
-                }
+                };
             }
             ddo.services[0].type = serviceType === "computeRadio" ? "compute" : "access";
             ddo.services[0].files = await providerResponse;
@@ -176,14 +184,22 @@ const PublishPage = () => {
             // // Next you can check if if the ddo is valid by checking if validateResult.valid returned true
 
             if (validateResult) {
-                await nft.setMetadata(nftAddress, owner, 0, providerUrl, "", "0x2", encryptedResponse, validateResult.hash);
-                alert("Your data asset is created!")
+                await nft.setMetadata(
+                    nftAddress,
+                    owner,
+                    0,
+                    providerUrl,
+                    "",
+                    "0x2",
+                    encryptedResponse,
+                    validateResult.hash
+                );
+                alert("Your data asset is created!");
                 return ddo.id;
             } else {
                 alert("Invalid DDO");
                 return null;
             }
-
         }
     };
 
@@ -211,12 +227,18 @@ const PublishPage = () => {
     return (
         <div className=" w-full justify-center lg:rounded-lg lg:bg-white ">
             <form>
-                <div >
+                <div>
                     <div className="flex justify-center">
                         <div className="mb-3 xl:w-96">
                             <label className="form-label inline-block mb-2 text-gray-700">Data Asset Name</label>
 
-                            <input value={name} onChange={setPublishDetails} type="text" name="name" id="name" className="
+                            <input
+                                value={name}
+                                onChange={setPublishDetails}
+                                type="text"
+                                name="name"
+                                id="name"
+                                className="
                                  form-control
                                  block
                                  w-full
@@ -232,8 +254,9 @@ const PublishPage = () => {
                                  ease-in-out
                                  m-0
                                  focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none
-                               "  placeholder="Sample Data Name" />
-
+                               "
+                                placeholder="Sample Data Name"
+                            />
                         </div>
                     </div>
 
@@ -241,7 +264,13 @@ const PublishPage = () => {
                         <div className="mb-3 xl:w-96">
                             <label className="form-label inline-block mb-2 text-gray-700">Author</label>
 
-                            <input value={author} onChange={setPublishDetails} type="text" name="author" id="author" className="
+                            <input
+                                value={author}
+                                onChange={setPublishDetails}
+                                type="text"
+                                name="author"
+                                id="author"
+                                className="
                                  form-control
                                  block
                                  w-full
@@ -257,15 +286,22 @@ const PublishPage = () => {
                                  ease-in-out
                                  m-0
                                  focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none
-                               "  placeholder="Sample Data Name" />
-
+                               "
+                                placeholder="Sample Data Name"
+                            />
                         </div>
                     </div>
 
                     <div className="flex justify-center">
-                        <div className="mb-3 xl:w-96" >
+                        <div className="mb-3 xl:w-96">
                             <label className="form-label inline-block mb-2 text-gray-700 text-sm">NFT Name</label>
-                            <input value={nftName} onChange={setPublishDetails} type="text" name="nftName" id="nftName" className="
+                            <input
+                                value={nftName}
+                                onChange={setPublishDetails}
+                                type="text"
+                                name="nftName"
+                                id="nftName"
+                                className="
                                  form-control
                                  block
                                  w-full
@@ -281,14 +317,23 @@ const PublishPage = () => {
                                  ease-in-out
                                  m-0
                                  focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none
-                               "  />
+                               "
+                            />
                         </div>
                     </div>
 
                     <div className="flex justify-center">
-                        <div className="mb-3 xl:w-96" >
-                            <label className="form-label inline-block mb-2 text-gray-700 text-sm">NFT Symbol Name</label>
-                            <input value={symbol} onChange={setPublishDetails} type="text" name="symbol" id="symbol" className="
+                        <div className="mb-3 xl:w-96">
+                            <label className="form-label inline-block mb-2 text-gray-700 text-sm">
+                                NFT Symbol Name
+                            </label>
+                            <input
+                                value={symbol}
+                                onChange={setPublishDetails}
+                                type="text"
+                                name="symbol"
+                                id="symbol"
+                                className="
                                  form-control
                                  block
                                  w-full
@@ -304,20 +349,33 @@ const PublishPage = () => {
                                  ease-in-out
                                  m-0
                                  focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none
-                               "  />
+                               "
+                            />
                         </div>
                     </div>
 
                     <div className="flex justify-center">
-                    <label
-                            className="form-label mb-1 text-gray-700"
-                        >Asset Type: </label>
+                        <label className="form-label mb-1 text-gray-700">Asset Type: </label>
                         <div className="form-check form-check-inline">
-                            <input onChange={setPublishDetails} className="form-check-input form-check-input appearance-none rounded-full h-4 w-4 border border-gray-300 bg-white checked:bg-blue-600 checked:border-blue-600 focus:outline-none transition duration-200 mt-1 align-top bg-no-repeat bg-center bg-contain float-left mr-2 cursor-pointer" type="radio" name="assetType" id="datasetRadio" value="datasetRadio" />
+                            <input
+                                onChange={setPublishDetails}
+                                className="form-check-input form-check-input appearance-none rounded-full h-4 w-4 border border-gray-300 bg-white checked:bg-blue-600 checked:border-blue-600 focus:outline-none transition duration-200 mt-1 align-top bg-no-repeat bg-center bg-contain float-left mr-2 cursor-pointer"
+                                type="radio"
+                                name="assetType"
+                                id="datasetRadio"
+                                value="datasetRadio"
+                            />
                             <label className="form-check-label inline-block text-gray-800">Dataset</label>
                         </div>
                         <div className="form-check form-check-inline">
-                            <input onChange={setPublishDetails} className="form-check-input form-check-input appearance-none rounded-full h-4 w-4 border border-gray-300 bg-white checked:bg-blue-600 checked:border-blue-600 focus:outline-none transition duration-200 mt-1 align-top bg-no-repeat bg-center bg-contain float-left mr-2 cursor-pointer" type="radio" name="assetType" id="algorithmRadio" value="algorithmRadio" />
+                            <input
+                                onChange={setPublishDetails}
+                                className="form-check-input form-check-input appearance-none rounded-full h-4 w-4 border border-gray-300 bg-white checked:bg-blue-600 checked:border-blue-600 focus:outline-none transition duration-200 mt-1 align-top bg-no-repeat bg-center bg-contain float-left mr-2 cursor-pointer"
+                                type="radio"
+                                name="assetType"
+                                id="algorithmRadio"
+                                value="algorithmRadio"
+                            />
                             <label className="form-check-label inline-block text-gray-800">Algorithm</label>
                         </div>
                     </div>
@@ -326,7 +384,13 @@ const PublishPage = () => {
                         <div className="mb-3 xl:w-96">
                             <label className="form-label inline-block mb-2 text-gray-700">Data Asset URL</label>
 
-                            <input value={fileUrl} onChange={setPublishDetails} type="text" name="fileUrl" id="fileUrl" className="
+                            <input
+                                value={fileUrl}
+                                onChange={setPublishDetails}
+                                type="text"
+                                name="fileUrl"
+                                id="fileUrl"
+                                className="
                                  form-control
                                  block
                                  w-full
@@ -342,7 +406,9 @@ const PublishPage = () => {
                                  ease-in-out
                                  m-0
                                  focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none
-                               " placeholder="www.example.com" />
+                               "
+                                placeholder="www.example.com"
+                            />
                         </div>
                     </div>
 
@@ -350,7 +416,13 @@ const PublishPage = () => {
                         <div className="mb-3 xl:w-96">
                             <label className="form-label inline-block mb-2 text-gray-700">Provider URL</label>
 
-                            <input value={providerURL} onChange={setPublishDetails} type="text" name="providerURL" id="providerURL" className="
+                            <input
+                                value={providerURL}
+                                onChange={setPublishDetails}
+                                type="text"
+                                name="providerURL"
+                                id="providerURL"
+                                className="
                                  form-control
                                  block
                                  w-full
@@ -366,15 +438,22 @@ const PublishPage = () => {
                                  ease-in-out
                                  m-0
                                  focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none
-                               " placeholder="www.example.com" />
-
+                               "
+                                placeholder="www.example.com"
+                            />
                         </div>
                     </div>
 
                     <div className="flex justify-center">
                         <div className="mb-3 xl:w-96">
                             <label className="form-label inline-block mb-2 text-gray-700">Sample File URL</label>
-                            <input value={sampleFileURL} onChange={setPublishDetails} type="text" name="sampleFileURL" id="sampleFileURL" className="
+                            <input
+                                value={sampleFileURL}
+                                onChange={setPublishDetails}
+                                type="text"
+                                name="sampleFileURL"
+                                id="sampleFileURL"
+                                className="
                                  form-control
                                  block
                                  w-full
@@ -390,16 +469,15 @@ const PublishPage = () => {
                                  ease-in-out
                                  m-0
                                  focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none
-                               "  placeholder="www.example.com" />
-
+                               "
+                                placeholder="www.example.com"
+                            />
                         </div>
                     </div>
 
                     <div className="flex justify-center">
                         <div className="mb-3 xl:w-96">
-                            <label className="form-label inline-block mb-2 text-gray-700"
-                            >Timeout</label
-                            >
+                            <label className="form-label inline-block mb-2 text-gray-700">Timeout</label>
                             <input
                                 onChange={setPublishDetails}
                                 type="number"
@@ -431,7 +509,12 @@ const PublishPage = () => {
                         <div className="mb-3 xl:w-96">
                             <label className="form-label inline-block mb-2 text-gray-700 text-sm">Description</label>
                             <div className="mt-1">
-                                <textarea value={description} onChange={setPublishDetails} id="description" name="description" rows="3"
+                                <textarea
+                                    value={description}
+                                    onChange={setPublishDetails}
+                                    id="description"
+                                    name="description"
+                                    rows="3"
                                     className="
                                 form-control
                                 block
@@ -448,7 +531,9 @@ const PublishPage = () => {
                                 ease-in-out
                                 m-0
                                 focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none
-                              " placeholder="you@example.com"></textarea>
+                              "
+                                    placeholder="you@example.com"
+                                ></textarea>
                             </div>
                         </div>
                     </div>
@@ -457,7 +542,11 @@ const PublishPage = () => {
                         <div className="mb-3 xl:w-96">
                             <label className="form-label inline-block mb-2 text-gray-700 text-sm">Deny Account</label>
                             <div className="mt-1">
-                                <input value={denyAccnts} onChange={setPublishDetails} id="denyAccnts" name="denyAccnts"
+                                <input
+                                    value={denyAccnts}
+                                    onChange={setPublishDetails}
+                                    id="denyAccnts"
+                                    name="denyAccnts"
                                     className="
                                  form-control
                                  block
@@ -474,7 +563,9 @@ const PublishPage = () => {
                                  ease-in-out
                                  m-0
                                  focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none
-                               " placeholder="you@example.com"></input>
+                               "
+                                    placeholder="you@example.com"
+                                ></input>
                             </div>
                         </div>
                     </div>
@@ -482,9 +573,7 @@ const PublishPage = () => {
                     {/* service details */}
                     <div className="flex justify-center">
                         <div className="mb-3 xl:w-96">
-                            <label
-                                className="form-label inline-block mb-2 text-gray-700 text-sm"
-                            >Service Name</label>
+                            <label className="form-label inline-block mb-2 text-gray-700 text-sm">Service Name</label>
                             <input
                                 type="text"
                                 className="
@@ -512,31 +601,42 @@ const PublishPage = () => {
                     </div>
 
                     <div className="flex justify-center">
-                        <label
-                            className="form-label mb-1 text-gray-700"
-                        >Service Type: </label>
+                        <label className="form-label mb-1 text-gray-700">Service Type: </label>
 
                         <div className="form-check form-check-inline">
-                            <input onChange={setPublishDetails} className="form-check-input form-check-input appearance-none rounded-full h-4 w-4 border border-gray-300 bg-white checked:bg-blue-600 checked:border-blue-600 focus:outline-none transition duration-200 mt-1 align-top bg-no-repeat bg-center bg-contain float-left mr-2 cursor-pointer" type="radio" name="serviceType" id="accessRadio" value="accessRadio" />
+                            <input
+                                onChange={setPublishDetails}
+                                className="form-check-input form-check-input appearance-none rounded-full h-4 w-4 border border-gray-300 bg-white checked:bg-blue-600 checked:border-blue-600 focus:outline-none transition duration-200 mt-1 align-top bg-no-repeat bg-center bg-contain float-left mr-2 cursor-pointer"
+                                type="radio"
+                                name="serviceType"
+                                id="accessRadio"
+                                value="accessRadio"
+                            />
                             <label className="form-check-label inline-block text-gray-800">Access</label>
                         </div>
                         <div className="form-check form-check-inline">
-                            <input onChange={setPublishDetails} className="form-check-input form-check-input appearance-none rounded-full h-4 w-4 border border-gray-300 bg-white checked:bg-blue-600 checked:border-blue-600 focus:outline-none transition duration-200 mt-1 align-top bg-no-repeat bg-center bg-contain float-left mr-2 cursor-pointer" type="radio" name="serviceType" id="computeRadio" value="computeRadio" />
-                            <label className="form-check-label inline-block text-gray-800" >Compute</label>
+                            <input
+                                onChange={setPublishDetails}
+                                className="form-check-input form-check-input appearance-none rounded-full h-4 w-4 border border-gray-300 bg-white checked:bg-blue-600 checked:border-blue-600 focus:outline-none transition duration-200 mt-1 align-top bg-no-repeat bg-center bg-contain float-left mr-2 cursor-pointer"
+                                type="radio"
+                                name="serviceType"
+                                id="computeRadio"
+                                value="computeRadio"
+                            />
+                            <label className="form-check-label inline-block text-gray-800">Compute</label>
                         </div>
                     </div>
-
-
-
                 </div>
-
             </form>
 
-            <button onClick={createNft} type="submit" className="inline-flex justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">Publish</button>
-
-
+            <button
+                onClick={createNft}
+                type="submit"
+                className="inline-flex justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+            >
+                Publish
+            </button>
         </div>
-
     );
 };
 

@@ -1,4 +1,4 @@
-import { Route, Routes } from "react-router-dom";
+import { Outlet, Route, Routes } from "react-router-dom";
 import "./App.css";
 import Header from "./header/header.component";
 import Sidebar from "./sidebar/sidebar.component";
@@ -8,6 +8,7 @@ import LabPage from "./lab/lab.page";
 import { createContext, useState } from "react";
 import { QueryClient, QueryClientProvider } from "react-query";
 import { ConfigHelper } from "@oceanprotocol/lib";
+import AssetPage from "./asset/asset.page";
 
 let oceanConfig = new ConfigHelper().getConfig(process.env.REACT_APP_OCEAN_NETWORK);
 
@@ -20,17 +21,24 @@ function App() {
     const [currentAccount, setCurrentAccount] = useState(null);
 
     return (
-        <div className="App">
+        <div>
             <AccountContext.Provider value={{ currentAccount, setCurrentAccount }}>
                 <OceanConfigContext.Provider value={{ oceanConfig }}>
                     <QueryClientProvider client={queryClient}>
                         <Header />
-                        <Sidebar />
-                        <Routes>
-                            <Route path="/" element={<MarketplacePage />}></Route>
-                            <Route path="publish" element={<PublishPage />}></Route>
-                            <Route path="lab" element={<LabPage />}></Route>
-                        </Routes>
+                        <div className="flex">
+                            <div className="w-1/6">
+                                <Sidebar />
+                            </div>
+                            <div className="w-5/6">
+                                <Routes>
+                                    <Route path="/" exact element={<MarketplacePage />}></Route>
+                                    <Route path="publish" element={<PublishPage />}></Route>
+                                    <Route path="lab" element={<LabPage />}></Route>
+                                    <Route path="asset/:id" element={<AssetPage />}></Route>
+                                </Routes>
+                            </div>
+                        </div>
                     </QueryClientProvider>
                 </OceanConfigContext.Provider>
             </AccountContext.Provider>

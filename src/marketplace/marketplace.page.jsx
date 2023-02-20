@@ -1,67 +1,91 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
+import { NavLink } from "react-router-dom";
 
 const MarketplacePage = () => {
-    const [nfts, setNfts] = useState(null);
+    const [dids, setDids] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
 
-    const endpoint = "https://v4.subgraph.goerli.oceanprotocol.com/subgraphs/name/oceanprotocol/ocean-subgraph";
-    const NFTs_QUERY = `
-        {
-            nfts(first: 10, orderBy: createdTimestamp, orderDirection: desc) {
-                id
-                symbol
-                name
-                address
-                owner {
-                    id
-                }
-                creator {
-                    id
-                }
-                providerUrl
-            }
-        }
-    `;
+    const endpoint = "https://v4.aquarius.oceanprotocol.com/api/aquarius/assets/query";
+    const post_body = {
+        from: 0,
+        size: 10,
+        query: {
+            bool: {
+                filter: [
+                    {
+                        term: {
+                            _index: "aquarius",
+                        },
+                    },
+                    {
+                        terms: {
+                            chainId: [5],
+                        },
+                    },
+                    {
+                        term: {
+                            "purgatory.state": false,
+                        },
+                    },
+                    {
+                        terms: {
+                            "services.type": ["access", "compute", "metadata"],
+                        },
+                    },
+                ],
+            },
+        },
+        sort: {
+            "nft.created": "desc",
+        },
+    };
 
     useEffect(() => {
         try {
-            const getNfts = async () => {
-                const response = await axios.post(endpoint, { query: NFTs_QUERY });
-                setNfts(response.data.data.nfts);
+            const getDids = async () => {
+                const response = await axios.post(endpoint, post_body);
+                setDids(response.data.hits.hits.map((data) => data._source));
             };
 
-            getNfts();
+            getDids();
         } catch (error) {
             setError(error);
         }
     }, []);
 
     useEffect(() => {
-        if (nfts) {
+        if (dids) {
+            console.log(dids);
             setIsLoading(false);
         }
-    }, [nfts]);
+    }, [dids]);
 
     return (
         <div>
             {isLoading ? (
                 <p>Loading</p>
             ) : (
-                <div className="float-right">
-                    {nfts.map((nft) => (
-                        <div key={nft.id} className="w-1/4 inline-block">
-                            Symbol: {nft.symbol} <br />
-                            Name: {nft.name} <br />
-                            Address: {nft.address}
+                <div>
+                    {dids.map((did) => (
+                        <div key={did.id} className="w-1/4 inline-block border p-2">
+                            Symbol: {did.nft.symbol} <br />
+                            Name: {did.nft.name} <br />
+                            Address: {did.nft.address}
                             <br />
-                            Creator: {nft.creator.id}
+                            Created: {did.nft.created}
                             <br />
-                            Owner: {nft.owner.id}
+                            Owner: {did.nft.owner}
                             <br />
-                            ProviderURL: {nft.providerUrl}
+                            Services:{" "}
+                            {did.services.map((service) => (
+                                <span key={service.datatokenAddress}>{service.type},</span>
+                            ))}
                             <br />
+                            <button>
+                                <NavLink to={"/asset/" + did.id}>Go to Asset</NavLink>
+                            </button>
                             <br />
                             <br />
                         </div>
