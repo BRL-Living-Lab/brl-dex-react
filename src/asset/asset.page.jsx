@@ -1,8 +1,11 @@
 import axios from "axios";
+import { Datatoken } from "@oceanprotocol/lib";
 import { useContext, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { AccountContext } from "../App";
-import { gql } from "graphql-tag";
+import Web3 from "web3";
+// import { gql } from "graphql-tag";
+
 
 const GET_TOKEN_MINTER = `
     query ($id: ID!) {
@@ -20,6 +23,17 @@ const GET_TOKEN_MINTER = `
 `;
 
 const AssetPage = () => {
+
+
+    const [formData, setFormData] = useState({
+        receiver_address: "",
+    });
+
+    const {
+        receiver_address,
+    } = formData;
+
+
     const { id } = useParams();
     const [isLoading, setIsLoading] = useState(true);
     const [ddo, setDdo] = useState(null);
@@ -53,6 +67,42 @@ const AssetPage = () => {
     useEffect(() => {
         if (ddo) setIsLoading(false);
     }, [ddo]);
+
+    const mintDatatoken = async () => {
+
+        if (window.ethereum) {
+            const web3 = new Web3(window.ethereum);
+
+            const datatokenAddress = ddo.services[0].datatokenAddress
+            const receiverAddress = receiver_address;
+
+            const publisherAccount = ddo.nft.owner;
+            const datatoken = new Datatoken(web3);
+
+            await datatoken.mint(
+                datatokenAddress,
+                publisherAccount,
+                '4', // number of datatokens sent to the receiver
+                receiverAddress
+            );
+            let receiverBalance = await datatoken.balance(
+                datatokenAddress,
+                receiverAddress
+            );
+            alert(`Receiver Balance : ${receiverBalance}`);
+            console.log(`Receiver balance after mint: ${receiverBalance}`);
+        }
+    };
+
+    const setMintDetails = (e) => {
+        setFormData((prevState) => ({
+            ...prevState,
+            [e.target.name]: e.target.value,
+        }));
+    };
+
+
+    // this.can_mint = ddo.nft.owner === currentAccount;
 
     return (
         <div>
@@ -126,9 +176,27 @@ const AssetPage = () => {
                             <div>{datatoken.symbol}</div>
                             <label>Service ID</label>
                             <div>{datatoken.serviceId}</div>
-                            {tokens[datatoken.address.toLowerCase()] ? <button>Mint</button> : ""}
                         </div>
                     ))}
+                    <form>
+                        <input
+                            value={receiver_address}
+                            onChange={setMintDetails}
+                            type="text"
+                            name="receiver_address"
+                            id="receiver_address"
+                            placeholder="Receiver Address"
+                        />
+
+                    </form>
+                    <button
+
+                        type="submit"
+                        onClick={mintDatatoken}
+                    // disabled={!this.input.value}
+                    >
+                        Mint
+                    </button>
                 </div>
             )}
         </div>
