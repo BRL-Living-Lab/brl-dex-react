@@ -57,7 +57,7 @@ const MarketplacePage = () => {
 
     useEffect(() => {
         if (dids) {
-            console.log(dids);
+            console.log({ dids });
             setIsLoading(false);
         }
     }, [dids]);
@@ -72,15 +72,17 @@ const MarketplacePage = () => {
                         <div key={did.id} className="w-1/4 inline-block border p-2">
                             Symbol: {did.nft.symbol} <br />
                             Name: {did.nft.name} <br />
-                            Address: {did.nft.address}
+                            Address: <span className="text-sm">{did.nft.address}</span>
                             <br />
                             Created: {did.nft.created}
                             <br />
-                            Owner: {did.nft.owner}
+                            Owner: <span className="text-sm">{did.nft.owner}</span>
+                            <br />
+                            Type: <span>{did.metadata.type}</span>
                             <br />
                             Services:{" "}
                             {did.services.map((service) => (
-                                <span key={service.datatokenAddress}>{service.type},</span>
+                                <span key={service.datatokenAddress}>{service.type + " "} </span>
                             ))}
                             <br />
                             <button>
