@@ -6,11 +6,14 @@ const MarketplacePage = () => {
     const [dids, setDids] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [useNextButton, setUseNextButton] = useState(true);
+    const [usePrevButton, setUsePrevButton] = useState(false);
+    const [pageFrom, setPageFrom] = useState(0);
 
     const endpoint = "https://v4.aquarius.oceanprotocol.com/api/aquarius/assets/query";
     const post_body = {
         from: 0,
-        size: 10,
+        size: 9,
         query: {
             bool: {
                 filter: [
@@ -42,13 +45,14 @@ const MarketplacePage = () => {
         },
     };
 
+    const getDids = async (from) => {
+        const response = await axios.post(endpoint, { ...post_body, from });
+
+        setDids(response.data.hits.hits.map((data) => data._source));
+    };
+
     useEffect(() => {
         try {
-            const getDids = async () => {
-                const response = await axios.post(endpoint, post_body);
-                setDids(response.data.hits.hits.map((data) => data._source));
-            };
-
             getDids();
         } catch (error) {
             setError(error);
@@ -62,36 +66,60 @@ const MarketplacePage = () => {
         }
     }, [dids]);
 
+    const nextButtonClick = (pageFrom) => {
+        setIsLoading(true);
+        getDids(pageFrom);
+        setPageFrom(pageFrom);
+        if (pageFrom > 0) setUsePrevButton(true);
+    };
+
+    const prevButtonClick = (pageFrom) => {
+        setIsLoading(true);
+        getDids(pageFrom);
+        setPageFrom(pageFrom);
+        if (pageFrom <= 0) setUsePrevButton(false);
+    };
+
     return (
         <div>
             {isLoading ? (
                 <p>Loading</p>
             ) : (
                 <div>
-                    {dids.map((did) => (
-                        <div key={did.id} className="w-1/4 inline-block border p-2">
-                            Symbol: {did.nft.symbol} <br />
-                            Name: {did.nft.name} <br />
-                            Address: <span className="text-sm">{did.nft.address}</span>
-                            <br />
-                            Created: {did.nft.created}
-                            <br />
-                            Owner: <span className="text-sm">{did.nft.owner}</span>
-                            <br />
-                            Type: <span>{did.metadata.type}</span>
-                            <br />
-                            Services:{" "}
-                            {did.services.map((service) => (
-                                <span key={service.datatokenAddress}>{service.type + " "} </span>
-                            ))}
-                            <br />
-                            <button>
-                                <NavLink to={"/asset/" + did.id}>Go to Asset</NavLink>
-                            </button>
-                            <br />
-                            <br />
-                        </div>
-                    ))}
+                    <div className="grid grid-cols-3">
+                        {dids.map((did) => (
+                            <div key={did.id} className="border p-2 m-2">
+                                Symbol: {did.nft.symbol} <br />
+                                Name: {did.nft.name} <br />
+                                Address: <span className="text-sm">{did.nft.address}</span>
+                                <br />
+                                Created: {did.nft.created}
+                                <br />
+                                Owner: <span className="text-sm">{did.nft.owner}</span>
+                                <br />
+                                Type: <span>{did.metadata.type}</span>
+                                <br />
+                                Services:{" "}
+                                {did.services.map((service) => (
+                                    <span key={service.datatokenAddress}>{service.type + " "} </span>
+                                ))}
+                                <br />
+                                <div className="w-full items-center text-center">
+                                    <button className="items-center">
+                                        <NavLink to={"/asset/" + did.id}>Go to Asset</NavLink>
+                                    </button>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                    <div className="w-full flex justify-center gap-5">
+                        <button disabled={!usePrevButton} onClick={() => prevButtonClick(pageFrom - 9)}>
+                            Prev
+                        </button>
+                        <button disabled={!useNextButton} onClick={() => nextButtonClick(pageFrom + 9)}>
+                            Next
+                        </button>
+                    </div>
                 </div>
             )}
         </div>
