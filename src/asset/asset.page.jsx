@@ -1,7 +1,7 @@
 import axios from "axios";
 import { Datatoken } from "@oceanprotocol/lib";
 import { useContext, useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { AccountContext } from "../App";
 import Web3 from "web3";
 // import { gql } from "graphql-tag";
@@ -100,7 +100,10 @@ const AssetPage = () => {
             [e.target.name]: e.target.value,
         }));
     };
-
+    const navigate = useNavigate();
+    function handleClick() {
+        navigate("/assetEdit/" + ddo.id); // change '/new-page' to the path of the page you want to navigate to
+    }
 
     // this.can_mint = ddo.nft.owner === currentAccount;
 
@@ -110,6 +113,12 @@ const AssetPage = () => {
                 <p>Loading</p>
             ) : (
                 <div>
+                    <button
+      className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+      onClick={handleClick}
+    >
+      Modify Asset
+    </button>
                     Asset details
                     <div>DID:</div>
                     <div>{ddo.id}</div>
@@ -189,14 +198,14 @@ const AssetPage = () => {
                         />
 
                     </form>
-                    <button
-
-                        type="submit"
-                        onClick={mintDatatoken}
-                    // disabled={!this.input.value}
-                    >
-                        Mint
-                    </button>
+                        <button
+                            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+                            type="submit"
+                            onClick={mintDatatoken}
+                        // disabled={!this.input.value}
+                        >
+                            Mint
+                        </button>
                 </div>
             )}
         </div>
