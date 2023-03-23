@@ -1,8 +1,8 @@
 import axios from "axios";
-import { Datatoken } from "@oceanprotocol/lib";
+import { Datatoken, ProviderInstance, } from "@oceanprotocol/lib";
 import { useContext, useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { AccountContext } from "../App";
+import { AccountContext, OceanConfigContext } from "../App";
 import Web3 from "web3";
 // import { gql } from "graphql-tag";
 
@@ -25,6 +25,7 @@ const GET_TOKEN_MINTER = `
 const AssetPage = () => {
 
 
+    const { oceanConfig } = useContext(OceanConfigContext);
     const [formData, setFormData] = useState({
         receiver_address: "",
     });
@@ -94,6 +95,65 @@ const AssetPage = () => {
         }
     };
 
+    const handleDownloadAsset = async () => {
+        const web3 = new Web3(window.ethereum);
+        const datatoken = new Datatoken(web3);
+        const datatokenAddress = ddo.services[0].datatokenAddress
+        if (window.ethereum) {
+            let receiverBalance = await datatoken.balance(
+                datatokenAddress,
+                currentAccount
+            );
+
+            const initializeData = await ProviderInstance.initialize(
+                ddo.id,
+                ddo.services[0].id,
+                0,
+                currentAccount,
+                oceanConfig.providerUri
+            );
+
+            const providerFees = {
+                providerFeeAddress: initializeData.providerFee.providerFeeAddress,
+                providerFeeToken: initializeData.providerFee.providerFeeToken,
+                providerFeeAmount: initializeData.providerFee.providerFeeAmount,
+                v: initializeData.providerFee.v,
+                r: initializeData.providerFee.r,
+                s: initializeData.providerFee.s,
+                providerData: initializeData.providerFee.providerData,
+                validUntil: initializeData.providerFee.validUntil,
+            };
+
+            const txid = await datatoken.startOrder(
+                datatokenAddress,
+                currentAccount,
+                currentAccount,
+                0,
+                providerFees
+            );
+
+            const downloadURL = await ProviderInstance.getDownloadUrl(
+                ddo.id,
+                currentAccount,
+                ddo.services[0].id,
+                0,
+                txid.transactionHash,
+                oceanConfig.providerUri,
+                web3
+            );
+
+            // const asset_file = await downloadFile(downloadURL);
+
+            const link = document.createElement('a');
+            link.href = downloadURL;
+            link.download = 'Asset.pdf';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            console.log(downloadURL);
+        }
+    };
+
     const setMintDetails = (e) => {
         setFormData((prevState) => ({
             ...prevState,
@@ -101,7 +161,7 @@ const AssetPage = () => {
         }));
     };
     const navigate = useNavigate();
-    function handleClick() {
+    function handleModifyAsset() {
         navigate("/assetEdit/" + ddo.id); // change '/new-page' to the path of the page you want to navigate to
     }
 
@@ -115,11 +175,19 @@ const AssetPage = () => {
                 <div>
                     <button
       className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-      onClick={handleClick}
+      onClick={handleModifyAsset}
     >
       Modify Asset
     </button>
-                    Asset details
+
+    <button
+      className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
+      onClick={handleDownloadAsset}
+    >
+      Download Asset
+    </button>
+                    
+                    <h1>Asset details</h1>
                     <div>DID:</div>
                     <div>{ddo.id}</div>
                     <br />
