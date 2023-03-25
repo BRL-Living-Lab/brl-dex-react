@@ -112,6 +112,9 @@ const AssetPage = () => {
                 currentAccount,
                 oceanConfig.providerUri
             );
+            if (initializeData.error){
+                alert(initializeData.error);
+            } else {
 
             const providerFees = {
                 providerFeeAddress: initializeData.providerFee.providerFeeAddress,
@@ -151,6 +154,7 @@ const AssetPage = () => {
             link.click();
             document.body.removeChild(link);
             console.log(downloadURL);
+            }
         }
     };
 
