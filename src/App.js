@@ -9,6 +9,7 @@ import { createContext, useState } from "react";
 import { QueryClient, QueryClientProvider } from "react-query";
 import { ConfigHelper } from "@oceanprotocol/lib";
 import AssetPage from "./asset/asset.page";
+import AssetEdit from "./asset/assetEdit.page"
 
 let oceanConfig = new ConfigHelper().getConfig(process.env.REACT_APP_OCEAN_NETWORK);
 
@@ -36,6 +37,7 @@ function App() {
                                     <Route path="publish" element={<PublishPage />}></Route>
                                     <Route path="lab" element={<LabPage />}></Route>
                                     <Route path="asset/:id" element={<AssetPage />}></Route>
+                                    <Route path="assetEdit/:id" element={<AssetEdit />}></Route>
                                 </Routes>
                             </div>
                         </div>
