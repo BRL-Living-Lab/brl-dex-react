@@ -14,12 +14,16 @@ const PublishPage = () => {
         description: "",
         author: "",
         fileUrl: "",
-        providerURL: "",
+        providerURL: "https://v4.provider.goerli.oceanprotocol.com/",
         sampleFileURL: "",
         assetType: "",
-        timeout: null,
+        timeout: 0,
         serviceType: "",
         serviceName: "",
+        entryPoint: "node $ALGO",
+        image: "node",
+        tag: "alpine:3.16",
+        checksum: "sha256:d7c1c5566f2eb09a6f16044174f285f3e0d0073a58bfd2f188c71a6decb5fc15",
     });
 
     const {
@@ -36,6 +40,10 @@ const PublishPage = () => {
         timeout,
         serviceType,
         serviceName,
+        entryPoint,
+        image,
+        tag,
+        checksum,
     } = formData;
 
     const DATASET_ASSET_URL = {
@@ -91,6 +99,56 @@ const PublishPage = () => {
         ],
     };
 
+    const ALGORITHM_ASSET_URL = {
+        datatokenAddress: "0x0",
+        nftAddress: "0x0",
+        files: [
+            {
+                type: "url",
+                url: "https://raw.githubusercontent.com/oceanprotocol/test-algorithm/master/javascript/algo.js",
+                method: "GET",
+            },
+        ],
+    };
+
+    const ALGORITHM_DDO = {
+        "@context": ["https://w3id.org/did/v1"],
+        id: "",
+        version: "4.1.0",
+        chainId: 5,
+        nftAddress: "0x0",
+        metadata: {
+            created: "2021-12-20T14:35:20Z",
+            updated: "2021-12-20T14:35:20Z",
+            type: "algorithm",
+            name: "algorithm-name",
+            description: "Ocean protocol test algorithm description",
+            author: "oceanprotocol-team",
+            license: "https://market.oceanprotocol.com/terms",
+            additionalInformation: {
+                termsAndConditions: true,
+            },
+            algorithm: {
+                container: {
+                    entrypoint: "node $ALGO",
+                    image: "node",
+                    tag: "alpine:3.16",
+                    checksum: "sha256:d7c1c5566f2eb09a6f16044174f285f3e0d0073a58bfd2f188c71a6decb5fc15",
+                },
+            },
+        },
+        services: [
+            {
+                id: "notAnId",
+                type: "access",
+                files: "",
+                datatokenAddress: "0xa15024b732A8f2146423D14209eFd074e61964F3",
+                serviceEndpoint: "https://v4.provider.goerli.oceanprotocol.com/",
+                timeout: 3000,
+            },
+        ],
+    };
+
     const createAsset = async (name, symbol, owner, assetUrl, ddo, providerUrl, sampleFileURL) => {
         console.log(owner);
         if (window.ethereum) {
@@ -124,31 +182,35 @@ const PublishPage = () => {
                 mpFeeAddress: ZERO_ADDRESS,
             };
 
+            console.log("here");
+
             const result = await Factory.createNftWithDatatoken(owner, nftParamsAsset, datatokenParams);
+            console.log(result);
+
             const nftAddress = result.events.NFTCreated.returnValues[0];
             const datatokenAddressAsset = result.events.TokenCreated.returnValues[0];
 
             // Define metadata as per data set type
-            if (assetType === "algorithmRadio") {
-                ddo.metadata.algorithm = {
-                    language: "",
-                    version: "",
-                    consumerParameters: {},
-                    conatiner: {},
-                };
-            }
+            // if (assetType === "algorithmRadio") {
+            //     ddo.metadata.algorithm = {
+            //         language: "",
+            //         version: "",
+            //         consumerParameters: {},
+            //         conatiner: {},
+            //     };
+            // }
             // handle deny permissions to accounts
-            if (denyAccnts !== "") {
-                const cred = {
-                    deny: [
-                        {
-                            type: "address",
-                            values: [denyAccnts],
-                        },
-                    ],
-                };
-                ddo.credentials = cred;
-            }
+            // if (denyAccnts !== "") {
+            //     const cred = {
+            //         deny: [
+            //             {
+            //                 type: "address",
+            //                 values: [denyAccnts],
+            //             },
+            //         ],
+            //     };
+            //     ddo.credentials = cred;
+            // }
 
             ddo.nftAddress = web3.utils.toChecksumAddress(nftAddress);
             console.log({ nftAddress });
@@ -203,18 +265,34 @@ const PublishPage = () => {
         }
     };
 
-    const createNft = async () => {
-        DATASET_ASSET_URL.files[0].url = fileUrl;
-        let datasetId = await createAsset(
-            name,
-            symbol,
-            currentAccount,
-            DATASET_ASSET_URL,
-            DATASET_DDO,
-            oceanConfig.providerUri
-        );
+    const createNft = async (e) => {
+        e.preventDefault();
 
-        // console.log(`dataset id: ${datasetId}`);
+        let assetId;
+
+        if (assetType === "algorithmRadio") {
+            ALGORITHM_ASSET_URL.files[0].url = fileUrl;
+            assetId = await createAsset(
+                name,
+                symbol,
+                currentAccount,
+                ALGORITHM_ASSET_URL,
+                ALGORITHM_DDO,
+                oceanConfig.providerUri
+            );
+        } else if (assetType === "datasetRadio") {
+            DATASET_ASSET_URL.files[0].url = fileUrl;
+            assetId = await createAsset(
+                name,
+                symbol,
+                currentAccount,
+                DATASET_ASSET_URL,
+                DATASET_DDO,
+                oceanConfig.providerUri
+            );
+        }
+
+        console.log(`asset id: ${assetId}`);
     };
 
     const setPublishDetails = (e) => {
@@ -228,6 +306,31 @@ const PublishPage = () => {
         <div className=" w-full justify-center lg:rounded-lg lg:bg-white ">
             <form>
                 <div>
+                    <div className="flex justify-center">
+                        <label className="form-label mb-1 text-gray-700">Asset Type: </label>
+                        <div className="form-check form-check-inline">
+                            <input
+                                onChange={setPublishDetails}
+                                className="form-check-input form-check-input appearance-none rounded-full h-4 w-4 border border-gray-300 bg-white checked:bg-blue-600 checked:border-blue-600 focus:outline-none transition duration-200 mt-1 align-top bg-no-repeat bg-center bg-contain float-left mr-2 cursor-pointer"
+                                type="radio"
+                                name="assetType"
+                                id="datasetRadio"
+                                value="datasetRadio"
+                            />
+                            <label className="form-check-label inline-block text-gray-800">Dataset</label>
+                        </div>
+                        <div className="form-check form-check-inline">
+                            <input
+                                onChange={setPublishDetails}
+                                className="form-check-input form-check-input appearance-none rounded-full h-4 w-4 border border-gray-300 bg-white checked:bg-blue-600 checked:border-blue-600 focus:outline-none transition duration-200 mt-1 align-top bg-no-repeat bg-center bg-contain float-left mr-2 cursor-pointer"
+                                type="radio"
+                                name="assetType"
+                                id="algorithmRadio"
+                                value="algorithmRadio"
+                            />
+                            <label className="form-check-label inline-block text-gray-800">Algorithm</label>
+                        </div>
+                    </div>
                     <div className="flex justify-center">
                         <div className="mb-3 xl:w-96">
                             <label className="form-label inline-block mb-2 text-gray-700">Data Asset Name</label>
@@ -355,35 +458,14 @@ const PublishPage = () => {
                     </div>
 
                     <div className="flex justify-center">
-                        <label className="form-label mb-1 text-gray-700">Asset Type: </label>
-                        <div className="form-check form-check-inline">
-                            <input
-                                onChange={setPublishDetails}
-                                className="form-check-input form-check-input appearance-none rounded-full h-4 w-4 border border-gray-300 bg-white checked:bg-blue-600 checked:border-blue-600 focus:outline-none transition duration-200 mt-1 align-top bg-no-repeat bg-center bg-contain float-left mr-2 cursor-pointer"
-                                type="radio"
-                                name="assetType"
-                                id="datasetRadio"
-                                value="datasetRadio"
-                            />
-                            <label className="form-check-label inline-block text-gray-800">Dataset</label>
-                        </div>
-                        <div className="form-check form-check-inline">
-                            <input
-                                onChange={setPublishDetails}
-                                className="form-check-input form-check-input appearance-none rounded-full h-4 w-4 border border-gray-300 bg-white checked:bg-blue-600 checked:border-blue-600 focus:outline-none transition duration-200 mt-1 align-top bg-no-repeat bg-center bg-contain float-left mr-2 cursor-pointer"
-                                type="radio"
-                                name="assetType"
-                                id="algorithmRadio"
-                                value="algorithmRadio"
-                            />
-                            <label className="form-check-label inline-block text-gray-800">Algorithm</label>
-                        </div>
-                    </div>
-
-                    <div className="flex justify-center">
                         <div className="mb-3 xl:w-96">
                             <label className="form-label inline-block mb-2 text-gray-700">Data Asset URL</label>
-
+                            <div>
+                                https://raw.githubusercontent.com/oceanprotocol/test-algorithm/master/javascript/algo.js
+                            </div>
+                            <div>
+                                https://raw.githubusercontent.com/oceanprotocol/testdatasets/main/shs_dataset_test.txt
+                            </div>
                             <input
                                 value={fileUrl}
                                 onChange={setPublishDetails}
@@ -538,7 +620,7 @@ const PublishPage = () => {
                         </div>
                     </div>
 
-                    <div className="flex justify-center">
+                    {/* <div className="flex justify-center">
                         <div className="mb-3 xl:w-96">
                             <label className="form-label inline-block mb-2 text-gray-700 text-sm">Deny Account</label>
                             <div className="mt-1">
@@ -568,7 +650,7 @@ const PublishPage = () => {
                                 ></input>
                             </div>
                         </div>
-                    </div>
+                    </div> */}
 
                     {/* service details */}
                     <div className="flex justify-center">
@@ -626,16 +708,147 @@ const PublishPage = () => {
                             <label className="form-check-label inline-block text-gray-800">Compute</label>
                         </div>
                     </div>
-                </div>
-            </form>
 
-            <button
-                onClick={createNft}
-                type="submit"
-                className="inline-flex justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-            >
-                Publish
-            </button>
+                    {assetType === "datasetRadio" ? (
+                        <div></div>
+                    ) : assetType === "algorithmRadio" ? (
+                        <div>
+                            <div className="flex justify-center">
+                                <div className="mb-3 xl:w-96">
+                                    <label className="form-label inline-block mb-2 text-gray-700">
+                                        Container Entry Point
+                                    </label>
+                                    <input
+                                        onChange={setPublishDetails}
+                                        type="text"
+                                        className="
+                                            form-control
+                                            block
+                                            w-full
+                                            px-3
+                                            py-1.5
+                                            text-base
+                                            font-normal
+                                            text-gray-700
+                                            bg-white bg-clip-padding
+                                            border border-solid border-gray-300
+                                            rounded
+                                            transition
+                                            ease-in-out
+                                            m-0
+                                            focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none
+                                        "
+                                        id="entryPoint"
+                                        name="entryPoint"
+                                        value={entryPoint}
+                                    />
+                                </div>
+                            </div>
+                            <div className="flex justify-center">
+                                <div className="mb-3 xl:w-96">
+                                    <label className="form-label inline-block mb-2 text-gray-700">
+                                        Container Image
+                                    </label>
+                                    <input
+                                        onChange={setPublishDetails}
+                                        type="text"
+                                        className="
+                                        form-control
+                                        block
+                                        w-full
+                                        px-3
+                                        py-1.5
+                                        text-base
+                                        font-normal
+                                        text-gray-700
+                                        bg-white bg-clip-padding
+                                        border border-solid border-gray-300
+                                        rounded
+                                        transition
+                                        ease-in-out
+                                        m-0
+                                        focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none
+                                    "
+                                        id="image"
+                                        name="image"
+                                        value={image}
+                                    />
+                                </div>
+                            </div>
+                            <div className="flex justify-center">
+                                <div className="mb-3 xl:w-96">
+                                    <label className="form-label inline-block mb-2 text-gray-700">Container Tag</label>
+                                    <input
+                                        onChange={setPublishDetails}
+                                        type="text"
+                                        className="
+                                        form-control
+                                        block
+                                        w-full
+                                        px-3
+                                        py-1.5
+                                        text-base
+                                        font-normal
+                                        text-gray-700
+                                        bg-white bg-clip-padding
+                                        border border-solid border-gray-300
+                                        rounded
+                                        transition
+                                        ease-in-out
+                                        m-0
+                                        focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none
+                                    "
+                                        id="tag"
+                                        name="tag"
+                                        value={tag}
+                                    />
+                                </div>
+                            </div>
+                            <div className="flex justify-center">
+                                <div className="mb-3 xl:w-96">
+                                    <label className="form-label inline-block mb-2 text-gray-700">
+                                        Container Checksum
+                                    </label>
+                                    <input
+                                        onChange={setPublishDetails}
+                                        type="text"
+                                        className="
+                                        form-control
+                                        block
+                                        w-full
+                                        px-3
+                                        py-1.5
+                                        text-base
+                                        font-normal
+                                        text-gray-700
+                                        bg-white bg-clip-padding
+                                        border border-solid border-gray-300
+                                        rounded
+                                        transition
+                                        ease-in-out
+                                        m-0
+                                        focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none
+                                    "
+                                        id="checksum"
+                                        name="checksum"
+                                        value={checksum}
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                    ) : (
+                        <div>Select an asset type</div>
+                    )}
+                </div>
+
+                <button
+                    onClick={createNft}
+                    type="submit"
+                    className="inline-flex justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                >
+                    Publish
+                </button>
+            </form>
         </div>
     );
 };
