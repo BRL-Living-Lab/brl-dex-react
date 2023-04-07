@@ -14,7 +14,7 @@ const PublishPage = () => {
         description: "",
         author: "",
         fileUrl: "",
-        providerURL: "https://v4.provider.goerli.oceanprotocol.com/",
+        providerURL: "https://v4.provider.mumbai.oceanprotocol.com/",
         sampleFileURL: "",
         assetType: "",
         timeout: 0,
@@ -62,7 +62,7 @@ const PublishPage = () => {
         "@context": ["https://w3id.org/did/v1"],
         id: "",
         version: "4.1.0",
-        chainId: 5,
+        chainId: 80001,
         nftAddress: "0x0",
         metadata: {
             created: "2021-12-20T14:35:20Z",
@@ -86,7 +86,7 @@ const PublishPage = () => {
                 name: "", //service friendly name
                 description: "", //service description
                 datatokenAddress: "0xa15024b732A8f2146423D14209eFd074e61964F3",
-                serviceEndpoint: "https://v4.provider.goerli.oceanprotocol.com/", // Provider URL (schema + host)
+                serviceEndpoint: "https://v4.provider.mumbai.oceanprotocol.com/", // Provider URL (schema + host)
                 timeout: 3000,
                 compute: {
                     // for compute assets only
@@ -115,7 +115,7 @@ const PublishPage = () => {
         "@context": ["https://w3id.org/did/v1"],
         id: "",
         version: "4.1.0",
-        chainId: 5,
+        chainId: 80001,
         nftAddress: "0x0",
         metadata: {
             created: "2021-12-20T14:35:20Z",
@@ -143,7 +143,7 @@ const PublishPage = () => {
                 type: "access",
                 files: "",
                 datatokenAddress: "0xa15024b732A8f2146423D14209eFd074e61964F3",
-                serviceEndpoint: "https://v4.provider.goerli.oceanprotocol.com/",
+                serviceEndpoint: "https://v4.provider.mumbai.oceanprotocol.com/",
                 timeout: 3000,
             },
         ],
@@ -160,6 +160,7 @@ const PublishPage = () => {
 
             console.log(web3, nft, Factory, oceanConfig);
             const chain = oceanConfig.chainId;
+            console.log({ chain });
             ddo.chainId = chain;
 
             const nftParamsAsset = {
@@ -185,12 +186,12 @@ const PublishPage = () => {
             console.log("here");
 
             const result = await Factory.createNftWithDatatoken(owner, nftParamsAsset, datatokenParams);
-            console.log(result);
+            console.log({ result });
 
             const nftAddress = result.events.NFTCreated.returnValues[0];
             const datatokenAddressAsset = result.events.TokenCreated.returnValues[0];
 
-            // Define metadata as per data set type
+            // // Define metadata as per data set type
             // if (assetType === "algorithmRadio") {
             //     ddo.metadata.algorithm = {
             //         language: "",
@@ -199,7 +200,7 @@ const PublishPage = () => {
             //         conatiner: {},
             //     };
             // }
-            // handle deny permissions to accounts
+            // // handle deny permissions to accounts
             // if (denyAccnts !== "") {
             //     const cred = {
             //         deny: [
@@ -217,7 +218,7 @@ const PublishPage = () => {
 
             assetUrl.datatokenAddress = datatokenAddressAsset;
             assetUrl.nftAddress = ddo.nftAddress;
-            let providerResponse = await ProviderInstance.encrypt(assetUrl, providerUrl);
+            let providerResponse = await ProviderInstance.encrypt(assetUrl, chain, providerUrl);
 
             // define ddo service
 
@@ -239,7 +240,7 @@ const PublishPage = () => {
 
             ddo.nftAddress = web3.utils.toChecksumAddress(nftAddress);
             ddo.id = generateDid(nftAddress, chain);
-            providerResponse = await ProviderInstance.encrypt(ddo, providerUrl);
+            providerResponse = await ProviderInstance.encrypt(ddo, chain, providerUrl);
             const encryptedResponse = await providerResponse;
             const validateResult = await aquarius.validate(ddo);
 

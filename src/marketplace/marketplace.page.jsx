@@ -1,6 +1,7 @@
 import axios from "axios";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { NavLink } from "react-router-dom";
+import { OceanConfigContext } from "../App";
 
 const MarketplacePage = () => {
     const [dids, setDids] = useState(null);
@@ -9,6 +10,7 @@ const MarketplacePage = () => {
     const [useNextButton, setUseNextButton] = useState(true);
     const [usePrevButton, setUsePrevButton] = useState(false);
     const [pageFrom, setPageFrom] = useState(0);
+    const { oceanConfig } = useContext(OceanConfigContext);
 
     const endpoint = "https://v4.aquarius.oceanprotocol.com/api/aquarius/assets/query";
     const post_body = {
@@ -24,7 +26,7 @@ const MarketplacePage = () => {
                     },
                     {
                         terms: {
-                            chainId: [5],
+                            chainId: [80001],
                         },
                     },
                     {
@@ -46,6 +48,8 @@ const MarketplacePage = () => {
     };
 
     const getDids = async (from) => {
+        console.log(oceanConfig);
+        post_body.query.bool.filter[1].terms.chainId = [oceanConfig.chainId];
         const response = await axios.post(endpoint, { ...post_body, from });
 
         setDids(response.data.hits.hits.map((data) => data._source));
