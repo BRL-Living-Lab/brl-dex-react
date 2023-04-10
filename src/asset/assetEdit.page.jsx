@@ -41,6 +41,7 @@ const AssetPage = () => {
 
     function handleInputChange(e) {
         const { name, value } = e.target;
+        // const newValue = value === '' ? "" : value;
         setFormValues({ ...formValues, [name]: value });
     }
 
@@ -51,7 +52,7 @@ const AssetPage = () => {
 
             for (let i = 0; i < response1.data.datatokens.length; i++) {
                 const response2 = await axios.post(
-                    "https://v4.subgraph.goerli.oceanprotocol.com/subgraphs/name/oceanprotocol/ocean-subgraph",
+                    "https://v4.subgraph.mumbai.oceanprotocol.com/subgraphs/name/oceanprotocol/ocean-subgraph",
                     {
                         query: GET_TOKEN_MINTER,
                         variables: { id: response1.data.datatokens[i].address.toLowerCase() },
@@ -99,7 +100,7 @@ const AssetPage = () => {
             }
         }
 
-        const providerResponse = await ProviderInstance.encrypt(ddo, oceanConfig.providerUri);
+        const providerResponse = await ProviderInstance.encrypt(ddo, oceanConfig.chainId, oceanConfig.providerUri);
         const encryptedResponse = await providerResponse;
         const metadataHash = getHash(JSON.stringify(ddo));
 
@@ -148,40 +149,26 @@ const AssetPage = () => {
                         <div>
                             <label>
                                 Name:
-                                <input type="text" name="name" value={formValues.name || data.metadata.name} onChange={handleInputChange} />
+                                <input type="text" name="name" value={formValues.name !== null && formValues.name !== undefined ? formValues.name : data.metadata.name || ""} onChange={handleInputChange} />
                             </label>
                         </div>
                         <div>
                             <label>
                                 Description:
-                                <input type="text" name="description" value={formValues.description || data.metadata.description} onChange={handleInputChange} />
+                                <input type="text" name="description" value={formValues.description !== null && formValues.description !== undefined ? formValues.description : data.metadata.description || ""} onChange={handleInputChange} />
                             </label>
                         </div>
-                        {data.credentials ? (
-                            <div>
-                                <label>
-                                    Deny Account ID:
-                                    <input
-                                        type="text"
-                                        name="denyAccountId"
-                                        value={formValues.denyAccountId || data.credentials.deny[0].values[0]}
-                                        onChange={handleInputChange}
-                                    />
-                                </label>
-                            </div>
-                        ) : (
-                            <div>
-                                <label>
-                                    Deny Account ID:
-                                    <input
-                                        type="text"
-                                        name="denyAccountId"
-                                        value={formValues.denyAccountId || ""}
-                                        onChange={handleInputChange}
-                                    />
-                                </label>
-                            </div>
-                        )}
+                        <div>
+    <label>
+        Deny Account ID:
+        <input
+            type="text"
+            name="denyAccountId"
+            value={!data.credentials ? formValues.denyAccountId !== null && formValues.denyAccountId !== undefined ? formValues.denyAccountId : "" : data.credentials.deny[0].values[0]}
+            onChange={handleInputChange}
+        />
+    </label>
+</div>
 
 
                         <br></br>
