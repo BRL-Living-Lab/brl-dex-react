@@ -138,7 +138,7 @@ const ComputeDetails = () => {
                             <p className="text-gray-800">{computeJob.algoDID}</p>
                         </div>
                         <div className="col-span-2">
-                            <p className="text-gray-600 font-medium">Input DID:</p>
+                            <p className="text-gray-600 font-medium">Dateset DIDs:</p>
                             {computeJob.inputDID.map((input, index) => (
                                 <p key={index} className="text-gray-800">
                                     {input}
