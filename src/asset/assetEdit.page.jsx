@@ -189,50 +189,52 @@ const AssetPage = () => {
                             <h1 className="text-2xl font-bold mb-4">NFT Details</h1>
                             <div className="grid grid-cols-2 gap-4 mb-4">
                                 <div className="col-span-2 sm:col-span-1">
-                                    <label className="block text-gray-700 font-bold mb-2" for="address">
+                                    <label className="block text-gray-700 font-bold mb-2">
                                         Address:
                                     </label>
                                     <p id="address" className="text-gray-700">{data.nft.address}</p>
                                 </div>
                                 <div className="col-span-2 sm:col-span-1">
-                                    <label className="block text-gray-700 font-bold mb-2" for="name">
+                                    <label className="block text-gray-700 font-bold mb-2" >
                                         Name:
                                     </label>
                                     <p id="name" className="text-gray-700">{data.nft.name}</p>
                                 </div>
                                 <div className="col-span-2 sm:col-span-1">
-                                    <label className="block text-gray-700 font-bold mb-2" for="symbol">
+                                    <label className="block text-gray-700 font-bold mb-2" >
                                         Symbol:
                                     </label>
                                     <p id="symbol" className="text-gray-700">{data.nft.symbol}</p>
                                 </div>
                                 <div className="col-span-2 sm:col-span-1">
-                                    <label className="block text-gray-700 font-bold mb-2" for="state">
+                                    <label className="block text-gray-700 font-bold mb-2" >
                                         State:
                                     </label>
                                     <p id="state" className="text-gray-700">{data.nft.state}</p>
                                 </div>
                                 <div className="col-span-2 sm:col-span-1">
-                                    <label className="block text-gray-700 font-bold mb-2" for="tokenURI">
+                                    <label className="block text-gray-700 font-bold mb-2" >
                                         Token URI:
                                     </label>
                                     <p id="tokenURI" className="text-gray-700">{data.nft.tokenURI}</p>
                                 </div>
                                 <div className="col-span-2 sm:col-span-1">
-                                    <label className="block text-gray-700 font-bold mb-2" for="owner">
+                                    <label className="block text-gray-700 font-bold mb-2" >
                                         Owner:
                                     </label>
                                     <p id="owner" className="text-gray-700">{data.nft.owner}</p>
                                 </div>
                                 <div className="col-span-2 sm:col-span-1">
-                                    <label className="block text-gray-700 font-bold mb-2" for="created">
+                                    <label className="block text-gray-700 font-bold mb-2" >
                                         Created:
                                     </label>
-                                    <p id="created" className="text-gray-700">{data.nft.created}</p>
+                                        <p id="created" className="text-gray-700">{data.nft.created}</p>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
 
+
+                        </form>
 
                         <div className="mt-8">
                             <button
@@ -244,9 +246,7 @@ const AssetPage = () => {
                             </button>
                         </div>
 
-                    </form>
-
-                </div>
+                    </div>
             )}
         </div>
 
