@@ -121,7 +121,7 @@ const PublishPage = () => {
             created: "2021-12-20T14:35:20Z",
             updated: "2021-12-20T14:35:20Z",
             type: "algorithm",
-            name: "algorithm-name",
+            name: name,
             description: "Ocean protocol test algorithm description",
             author: "oceanprotocol-team",
             license: "https://market.oceanprotocol.com/terms",
@@ -307,7 +307,6 @@ const PublishPage = () => {
         <div className="w-full justify-center ">
             <form className=" flex flex-col w-full">
                 <div className="grid grid-cols-2 gap-1">
-
                     {/* Column 1 */}
                     <div>
                         {/* Data Asset details */}
@@ -362,9 +361,7 @@ const PublishPage = () => {
                         {/* NFT symbol */}
                         <div className="flex justify-center">
                             <div className="mb-3 xl:w-96">
-                                <label className="block font-bold mb-1">
-                                    NFT Symbol Name
-                                </label>
+                                <label className="block font-bold mb-1">NFT Symbol Name</label>
                                 <input
                                     value={symbol}
                                     onChange={setPublishDetails}
@@ -444,19 +441,10 @@ const PublishPage = () => {
                                 />
                             </div>
                         </div>
-
                     </div>
-
-
-
-
-
-
 
                     {/* Column 2 */}
                     <div>
-
-
                         {/* DESCRIPTION */}
                         <div className="flex justify-center">
                             <div className="mb-3 xl:w-96">
@@ -475,8 +463,6 @@ const PublishPage = () => {
                             </div>
                         </div>
 
-
-
                         {/* service details */}
                         <div className="flex justify-center">
                             <div className="mb-3 xl:w-96">
@@ -490,8 +476,6 @@ const PublishPage = () => {
                                 />
                             </div>
                         </div>
-
-
 
                         {/* Asset Type radio buttons */}
                         <div className="flex justify-center">
@@ -522,17 +506,13 @@ const PublishPage = () => {
                             </span>
                         </div>
 
-
-
                         {assetType === "datasetRadio" ? (
                             <div></div>
                         ) : assetType === "algorithmRadio" ? (
                             <div>
                                 <div className="flex justify-center">
                                     <div className="mb-3 xl:w-96">
-                                        <label className="block font-bold mb-1">
-                                            Container Entry Point
-                                        </label>
+                                        <label className="block font-bold mb-1">Container Entry Point</label>
                                         <input
                                             onChange={setPublishDetails}
                                             type="text"
@@ -545,9 +525,7 @@ const PublishPage = () => {
                                 </div>
                                 <div className="flex justify-center">
                                     <div className="mb-3 xl:w-96">
-                                        <label className="block font-bold mb-1">
-                                            Container Image
-                                        </label>
+                                        <label className="block font-bold mb-1">Container Image</label>
                                         <input
                                             onChange={setPublishDetails}
                                             type="text"
@@ -573,9 +551,7 @@ const PublishPage = () => {
                                 </div>
                                 <div className="flex justify-center">
                                     <div className="mb-3 xl:w-96">
-                                        <label className="block font-bold mb-1">
-                                            Container Checksum
-                                        </label>
+                                        <label className="block font-bold mb-1">Container Checksum</label>
                                         <input
                                             onChange={setPublishDetails}
                                             type="text"
@@ -619,7 +595,6 @@ const PublishPage = () => {
                                 </div>
                             </span>
                         </div>
-
                     </div>
 
                     {/* <div className="flex justify-center">
@@ -653,7 +628,6 @@ const PublishPage = () => {
                             </div>
                         </div>
                     </div> */}
-
                 </div>
 
                 <div className="flex justify-center mt-1">
