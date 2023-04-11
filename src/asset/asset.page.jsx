@@ -176,26 +176,27 @@ const AssetPage = () => {
             {isLoading ? (
                 <p>Loading</p>
             ) : (
-                <div>
-                    <div className="flex justify-between items-center mb-4">
-                        <div className="flex">
-                            <button
-                                className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mr-2"
-                                onClick={handleModifyAsset}
-                            >
-                                Modify Asset
-                            </button>
+                    <div>
+                        <div className="flex justify-between items-center mb-4">
+                            <div className="flex">
+                                <button
+                                    className="border border-blue-500 hover:bg-blue-100 text-blue-500 hover:text-blue-700 font-bold py-2 px-4 rounded shadow mr-2"
+                                    onClick={handleModifyAsset}
+                                >
+                                    Modify Asset
+                                </button>
 
-                            <button
-                                className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded mr-2"
-                                onClick={handleDownloadAsset}
-                            >
-                                Download Asset
-                            </button>
+                                <button
+                                    className="border border-blue-800 hover:bg-blue-200 text-blue-800 hover:text-blue-900 font-bold py-2 px-4 rounded shadow mr-2"
+                                    onClick={handleDownloadAsset}
+                                >
+                                    Download Asset
+                                </button>
 
-                            <div className="flex items-center">
-                                <input
-                                    value={receiver_address}
+
+                                <div className="flex items-center">
+                                    <input
+                                        value={receiver_address}
                                     onChange={setMintDetails}
                                     type="text"
                                     name="receiver_address"
@@ -204,7 +205,7 @@ const AssetPage = () => {
                                     className="w-64 px-3 py-2 mr-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline"
                                 />
                                 <button
-                                    className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+                                    className="bg-blue-500 hover:bg-blue-400 text-white font-bold py-2 px-4 rounded"
                                     type="submit"
                                     onClick={mintDatatoken}
                                 // disabled={!this.input.value}
