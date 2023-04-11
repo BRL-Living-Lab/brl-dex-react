@@ -14,6 +14,7 @@ import CreateCompute from "./compute/create-compute.page";
 import ComputeDetails from "./compute/computeDetails.page";
 
 let oceanConfig = new ConfigHelper().getConfig(process.env.REACT_APP_OCEAN_NETWORK);
+oceanConfig.providerUri = "https://v4.provider.mumbai.oceanprotocol.com";
 
 export const AccountContext = createContext({
     currentAccount: null,
