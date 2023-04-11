@@ -3,6 +3,7 @@ import { useParams } from "react-router-dom";
 import { AccountContext, OceanConfigContext } from "../App";
 import Web3 from "web3";
 import { ProviderInstance } from "@oceanprotocol/lib";
+import { BsDownload } from "react-icons/bs";
 
 const ComputeDetails = () => {
     const { currentAccount, _ } = useContext(AccountContext);
@@ -53,14 +54,38 @@ const ComputeDetails = () => {
         }
     }, [computeJob]);
 
+    const downloadResults = async (jobId, index, filename) => {
+        console.log(jobId, index);
+        const resultsURL = await ProviderInstance.getComputeResultUrl(
+            oceanConfig.providerUri,
+            new Web3(window.ethereum),
+            Web3.utils.toChecksumAddress(currentAccount),
+            jobId,
+            index
+        );
+        console.log(resultsURL);
+
+        const downloadResponse = await fetch(resultsURL);
+        const resultsBlob = await downloadResponse.blob();
+        console.log(resultsBlob);
+        const url = URL.createObjectURL(resultsBlob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+    };
+
     return (
         <div>
-            <div className="bg-white rounded-md shadow-md">
-                <h2 className="font-light text-xl p-5 text-center">Compute Job Details</h2>
-                {isLoading ? (
-                    <p>Loading...</p>
-                ) : (
-                    <div className="grid grid-cols-2 gap-4 p-4">
+            {" "}
+            {isLoading ? (
+                <p>Loading...</p>
+            ) : (
+                <div className="bg-gray-100 rounded-md shadow-md">
+                    <h2 className="font-light text-xl p-5 text-center">Compute Job Details</h2>
+                    <div className="grid grid-cols-2 gap-4 p-5">
                         <div>
                             <p className="text-gray-600 font-medium">Agreement ID:</p>
                             <p className="text-gray-800">{computeJob.agreementId}</p>
@@ -91,6 +116,12 @@ const ComputeDetails = () => {
                                 <div key={index} className="flex justify-start space-x-2">
                                     <p className="text-gray-800">{result.filename}</p>
                                     <p className="text-gray-800">({result.filesize} bytes)</p>
+                                    <button
+                                        className=""
+                                        onClick={() => downloadResults(computeJob.jobId, index, result.filename)}
+                                    >
+                                        <BsDownload className="text-lg" />
+                                    </button>
                                 </div>
                             ))}
                         </div>
@@ -115,8 +146,9 @@ const ComputeDetails = () => {
                             ))}
                         </div>
                     </div>
-                )}
-            </div>
+                    <div className="flex justify-center p-5"></div>
+                </div>
+            )}
         </div>
     );
 };
