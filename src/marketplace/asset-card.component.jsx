@@ -55,7 +55,7 @@ const AssetCard = ({ did }) => {
                         ))}
                 </div>
             </div>
-            <div className="flex justify-between p-2 border-t border-gray-200">
+            <div className="flex justify-between p-2 border-t border-gray-200 max-h-10 overflow-hidden text-ellipsis">
                 <div className="font-normal text-xs">{did.metadata.description}</div>{" "}
             </div>
         </div>

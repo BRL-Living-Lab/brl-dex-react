@@ -91,7 +91,7 @@ const MarketplacePage = () => {
                 <p>Loading</p>
             ) : (
                 <div>
-                    <div className="grid grid-cols-3 gap-4">
+                    <div className="grid grid-cols-3 gap-x-4">
                         {dids.map((did) => (
                             <NavLink to={"/asset/" + did.id}>
                                 <AssetCard key={did.id} did={did} />

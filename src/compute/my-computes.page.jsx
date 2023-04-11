@@ -3,9 +3,12 @@ import axios from "axios";
 import { AccountContext, OceanConfigContext } from "../App";
 import { useContext, useEffect, useState } from "react";
 import Web3 from "web3";
+import ComputeCard from "./computeCard.component";
+import { NavLink } from "react-router-dom";
 
-const StatusPage = () => {
+const MyComputesPage = () => {
     const { oceanConfig } = useContext(OceanConfigContext);
+    const [computeJobs, setComputeJobs] = useState(null);
     const { currentAccount, _ } = useContext(AccountContext);
 
     const [isLoading, setIsLoading] = useState(true);
@@ -35,17 +38,35 @@ const StatusPage = () => {
                 Web3.utils.toChecksumAddress(currentAccount)
             );
 
-            console.log(response);
+            console.log({ response });
+            setComputeJobs(response);
         };
 
         getDDO();
-    }, []);
+    }, [currentAccount]);
+
+    useEffect(() => {
+        if (computeJobs) {
+            console.log(computeJobs);
+            setIsLoading(false);
+        }
+    }, [computeJobs, currentAccount]);
     return (
-        <div>
-            <p>Compute Status</p>
-            {isLoading ? <p>Loading...</p> : <div></div>}
+        <div className="bg-white rounded-md h-full overflow-y-scroll">
+            <h1 className="font-light text-xl p-5 text-center">Compute Status</h1>
+            {isLoading ? (
+                <p>Loading...</p>
+            ) : (
+                <div className="p-5">
+                    {computeJobs.map((computeJob) => (
+                        <NavLink to={"/computeDetails/" + computeJob.jobId}>
+                            <ComputeCard computeJob={computeJob} key={computeJob.jobId} />
+                        </NavLink>
+                    ))}
+                </div>
+            )}
         </div>
     );
 };
 
-export default StatusPage;
+export default MyComputesPage;

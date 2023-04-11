@@ -6,9 +6,9 @@ const Sidebar = () => {
         <div className="flex flex-col justify-start text-left h-full bg-white shadow-lg rounded-lg items-center pt-5">
             <SidebarItem to="/" text="Marketplace" />
             <SidebarItem to="publish" text="Publish Assets" />
-            <SidebarItem to="lab" text="Initialize Compute" />
-            <SidebarItem to="lab" text="My Computes" />
-            <SidebarItem to="lab" text="Federated Learning" />
+            <SidebarItem to="createCompute" text="New Compute Job" />
+            <SidebarItem to="computeStatus" text="Compute Status" />
+            <SidebarItem to="fml" text="Federated Learning" />
         </div>
     );
 };
