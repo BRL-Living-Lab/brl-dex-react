@@ -142,59 +142,114 @@ const AssetPage = () => {
                 <p>Loading</p>
             ) : (
                 <div>
-                    <h2>Modify Asset</h2>
+                    <h2 className="text-2xl font-bold mb-4">Modify Asset</h2>
 
                     <form>
 
-                        <div>
-                            <label>
+                        <div className="mb-4">
+                            <label className="block font-bold mb-2">
                                 Name:
-                                <input type="text" name="name" value={formValues.name !== null && formValues.name !== undefined ? formValues.name : data.metadata.name || ""} onChange={handleInputChange} />
+                                <input
+                                    className="block w-1/2 rounded-md border-gray-400 border-solid border-2 px-3 py-2 mt-1"
+                                    type="text"
+                                    name="name"
+                                    value={formValues.name !== null && formValues.name !== undefined ? formValues.name : data.metadata.name || ""}
+                                    onChange={handleInputChange}
+                                />
                             </label>
                         </div>
-                        <div>
-                            <label>
+
+                        <div className="mb-4">
+                            <label className="block font-bold mb-2">
                                 Description:
-                                <input type="text" name="description" value={formValues.description !== null && formValues.description !== undefined ? formValues.description : data.metadata.description || ""} onChange={handleInputChange} />
+                                <input
+                                    className="block w-1/2 rounded-md border-gray-400 border-solid border-2 px-3 py-2 mt-1"
+                                    type="text"
+                                    name="description"
+                                    value={formValues.description !== null && formValues.description !== undefined ? formValues.description : data.metadata.description || ""}
+                                    onChange={handleInputChange}
+                                />
                             </label>
                         </div>
-                        <div>
-    <label>
-        Deny Account ID:
-        <input
-            type="text"
-            name="denyAccountId"
-            value={!data.credentials ? formValues.denyAccountId !== null && formValues.denyAccountId !== undefined ? formValues.denyAccountId : "" : data.credentials.deny[0].values[0]}
-            onChange={handleInputChange}
-        />
-    </label>
-</div>
 
+                        <div className="mb-4">
+                            <label className="block font-bold mb-2">
+                                Deny Account ID:
+                                <input
+                                    className="block w-1/2 rounded-md border-gray-400 border-solid border-2 px-3 py-2 mt-1"
+                                    type="text"
+                                    name="denyAccountId"
+                                    value={!data.credentials ? formValues.denyAccountId !== null && formValues.denyAccountId !== undefined ? formValues.denyAccountId : "" : data.credentials.deny[0].values[0]}
+                                    onChange={handleInputChange}
+                                />
+                            </label>
+                        </div>
 
-                        <br></br>
-                        <div>
-                            <h1>NFT Details</h1>
-                            <p>Address: {data.nft.address}</p>
-                            <p>Name: {data.nft.name}</p>
-                            <p>Symbol: {data.nft.symbol}</p>
-                            <p>State: {data.nft.state}</p>
-                            <p>TokenURI: {data.nft.tokenURI}</p>
-                            <p>Owner: {data.nft.owner}</p>
-                            <p>Created: {data.nft.created}</p>
+                        <div className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+                            <h1 className="text-2xl font-bold mb-4">NFT Details</h1>
+                            <div className="grid grid-cols-2 gap-4 mb-4">
+                                <div className="col-span-2 sm:col-span-1">
+                                    <label className="block text-gray-700 font-bold mb-2" for="address">
+                                        Address:
+                                    </label>
+                                    <p id="address" className="text-gray-700">{data.nft.address}</p>
+                                </div>
+                                <div className="col-span-2 sm:col-span-1">
+                                    <label className="block text-gray-700 font-bold mb-2" for="name">
+                                        Name:
+                                    </label>
+                                    <p id="name" className="text-gray-700">{data.nft.name}</p>
+                                </div>
+                                <div className="col-span-2 sm:col-span-1">
+                                    <label className="block text-gray-700 font-bold mb-2" for="symbol">
+                                        Symbol:
+                                    </label>
+                                    <p id="symbol" className="text-gray-700">{data.nft.symbol}</p>
+                                </div>
+                                <div className="col-span-2 sm:col-span-1">
+                                    <label className="block text-gray-700 font-bold mb-2" for="state">
+                                        State:
+                                    </label>
+                                    <p id="state" className="text-gray-700">{data.nft.state}</p>
+                                </div>
+                                <div className="col-span-2 sm:col-span-1">
+                                    <label className="block text-gray-700 font-bold mb-2" for="tokenURI">
+                                        Token URI:
+                                    </label>
+                                    <p id="tokenURI" className="text-gray-700">{data.nft.tokenURI}</p>
+                                </div>
+                                <div className="col-span-2 sm:col-span-1">
+                                    <label className="block text-gray-700 font-bold mb-2" for="owner">
+                                        Owner:
+                                    </label>
+                                    <p id="owner" className="text-gray-700">{data.nft.owner}</p>
+                                </div>
+                                <div className="col-span-2 sm:col-span-1">
+                                    <label className="block text-gray-700 font-bold mb-2" for="created">
+                                        Created:
+                                    </label>
+                                    <p id="created" className="text-gray-700">{data.nft.created}</p>
+                                </div>
+                            </div>
                         </div>
 
 
-
+                        <div className="mt-8">
+                            <button
+                                onClick={handleSubmit}
+                                type="submit"
+                                className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+                            >
+                                Modify
+                            </button>
+                        </div>
 
                     </form>
-                    <div>
-                        <button onClick={handleSubmit} type="submit" className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-                            Modify
-                        </button>
-                    </div>
+
                 </div>
             )}
         </div>
+
     );
 };
 
