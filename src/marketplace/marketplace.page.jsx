@@ -1,7 +1,8 @@
 import axios from "axios";
 import { useContext, useEffect, useState } from "react";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import { OceanConfigContext } from "../App";
+import AssetCard from "./asset-card.component";
 
 const MarketplacePage = () => {
     const [dids, setDids] = useState(null);
@@ -15,7 +16,7 @@ const MarketplacePage = () => {
     const endpoint = "https://v4.aquarius.oceanprotocol.com/api/aquarius/assets/query";
     const post_body = {
         from: 0,
-        size: 9,
+        size: 12,
         query: {
             bool: {
                 filter: [
@@ -90,30 +91,33 @@ const MarketplacePage = () => {
                 <p>Loading</p>
             ) : (
                 <div>
-                    <div className="grid grid-cols-3">
+                    <div className="grid grid-cols-3 gap-4">
                         {dids.map((did) => (
-                            <div key={did.id} className="border p-2 m-2">
-                                Symbol: {did.nft.symbol} <br />
-                                Name: {did.nft.name} <br />
-                                Address: <span className="text-sm">{did.nft.address}</span>
-                                <br />
-                                Created: {did.nft.created}
-                                <br />
-                                Owner: <span className="text-sm">{did.nft.owner}</span>
-                                <br />
-                                Type: <span>{did.metadata.type}</span>
-                                <br />
-                                Services:{" "}
-                                {did.services.map((service) => (
-                                    <span key={service.datatokenAddress}>{service.type + " "} </span>
-                                ))}
-                                <br />
-                                <div className="w-full items-center text-center">
-                                    <button className="items-center">
-                                        <NavLink to={"/asset/" + did.id}>Go to Asset</NavLink>
-                                    </button>
-                                </div>
-                            </div>
+                            <NavLink to={"/asset/" + did.id}>
+                                <AssetCard key={did.id} did={did} />
+                            </NavLink>
+                            // <div key={did.id} className="border p-2 m-2">
+                            //     Symbol: {did.nft.symbol} <br />
+                            //     Name: {did.nft.name} <br />
+                            //     Address: <span className="text-sm">{did.nft.address}</span>
+                            //     <br />
+                            //     Created: {did.nft.created}
+                            //     <br />
+                            //     Owner: <span className="text-sm">{did.nft.owner}</span>
+                            //     <br />
+                            //     Type: <span>{did.metadata.type}</span>
+                            //     <br />
+                            //     Services:{" "}
+                            //     {did.services.map((service) => (
+                            //         <span key={service.datatokenAddress}>{service.type + " "} </span>
+                            //     ))}
+                            //     <br />
+                            //     <div className="w-full items-center text-center">
+                            //         <button className="items-center">
+                            //             <NavLink to={"/asset/" + did.id}>Go to Asset</NavLink>
+                            //         </button>
+                            //     </div>
+                            // </div>
                         ))}
                     </div>
                     <div className="w-full flex justify-center gap-5">
