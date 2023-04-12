@@ -1,5 +1,6 @@
 import { useContext } from "react";
 import { AccountContext, OceanConfigContext } from "../App";
+import Web3 from "web3";
 
 const Header = () => {
     const { currentAccount, setCurrentAccount } = useContext(AccountContext);
@@ -20,11 +21,11 @@ const Header = () => {
             const accounts = await ethereum.request({ method: "eth_requestAccounts" });
 
             console.log("Found addresses", accounts);
-            setCurrentAccount(accounts[0]);
+            setCurrentAccount(Web3.utils.toChecksumAddress(accounts[0]));
 
             ethereum.on("accountsChanged", function (accounts) {
                 console.log("accountsChanged", accounts);
-                setCurrentAccount(accounts[0]);
+                setCurrentAccount(Web3.utils.toChecksumAddress(accounts[0]));
             });
 
             ethereum.on("chainChanged", function (chainId) {
