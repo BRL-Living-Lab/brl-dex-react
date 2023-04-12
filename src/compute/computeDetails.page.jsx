@@ -84,7 +84,7 @@ const ComputeDetails = () => {
                 <p>Loading...</p>
             ) : (
                 <div className="bg-gray-100 rounded-md shadow-md">
-                    <h2 className="font-light text-xl p-5 text-center">Compute Job Details</h2>
+                    <h1 className="font-light text-xl p-5 text-center">Compute Job Details</h1>
                     <div className="grid grid-cols-2 gap-4 p-5">
                         <div>
                             <p className="text-gray-600 font-medium">Agreement ID:</p>
