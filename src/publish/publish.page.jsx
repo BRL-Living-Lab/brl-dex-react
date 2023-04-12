@@ -468,6 +468,7 @@ const PublishPage = () => {
                             <div className="mb-3 xl:w-96">
                                 <label className="block font-bold mb-1">Service Name</label>
                                 <input
+                                    onChange={setPublishDetails}
                                     type="text"
                                     className="mb-1 block w-full rounded-md border-blue-400 border-solid border-2 px-3 py-2 mt-1"
                                     id="serviceName"
