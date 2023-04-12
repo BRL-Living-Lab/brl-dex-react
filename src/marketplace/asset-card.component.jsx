@@ -10,8 +10,8 @@ const AssetCard = ({ did }) => {
                 <div
                     className={
                         did.metadata.type === "dataset"
-                            ? "bg-green-800 text-white px-2 rounded-md font-semibold shadow-sm shadow-black"
-                            : "bg-red-800 text-white px-2 rounded-md font-semibold shadow-sm shadow-black"
+                            ? "bg-purple-500 h-6 text-white px-2 rounded-md font-semibold shadow-sm shadow-black"
+                            : "bg-pink-600 h-6 text-white px-2 rounded-md font-semibold shadow-sm shadow-black"
                     }
                 >
                     {did.metadata.type}
