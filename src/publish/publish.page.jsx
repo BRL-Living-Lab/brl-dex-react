@@ -122,8 +122,8 @@ const PublishPage = () => {
             updated: "2021-12-20T14:35:20Z",
             type: "algorithm",
             name: name,
-            description: "Ocean protocol test algorithm description",
-            author: "oceanprotocol-team",
+            description: description,
+            author: author,
             license: "https://market.oceanprotocol.com/terms",
             additionalInformation: {
                 termsAndConditions: true,
