@@ -163,6 +163,7 @@ const PublishPage = () => {
             const chain = oceanConfig.chainId;
             console.log({ chain });
             ddo.chainId = chain;
+            const currentDate = new Date().toISOString();
 
             const nftParamsAsset = {
                 name: nftName, //Name of NFT set in contract
@@ -170,7 +171,7 @@ const PublishPage = () => {
                 templateIndex: 1,
                 tokenURI: "",
                 state: 0,
-                created: "2000-10-31T01:30:00",
+                created: currentDate,
                 transferable: true,
                 owner,
             };
@@ -184,6 +185,8 @@ const PublishPage = () => {
                 mpFeeAddress: ZERO_ADDRESS,
             };
 
+            ddo.metadata.created = currentDate;
+            ddo.metadata.updated = currentDate;
             console.log("here");
 
             const result = await Factory.createNftWithDatatoken(owner, nftParamsAsset, datatokenParams);
