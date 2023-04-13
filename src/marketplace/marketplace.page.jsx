@@ -3,6 +3,7 @@ import { useContext, useEffect, useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { OceanConfigContext } from "../App";
 import AssetCard from "./asset-card.component";
+import { MoonLoader } from "react-spinners";
 
 const MarketplacePage = () => {
     const [dids, setDids] = useState(null);
@@ -88,8 +89,11 @@ const MarketplacePage = () => {
     return (
         <div>
             {isLoading ? (
-                <p>Loading</p>
+                <div className="flex justify-center align-middle items-center h-80v">
+                    <MoonLoader color="#000000" size={30} />
+                </div>
             ) : (
+                // </div>
                 <div>
                     <div className="grid grid-cols-3 gap-x-4">
                         {dids.map((did) => (

@@ -5,6 +5,7 @@ import { useContext, useEffect, useState } from "react";
 import Web3 from "web3";
 import ComputeCard from "./computeCard.component";
 import { NavLink } from "react-router-dom";
+import { MoonLoader } from "react-spinners";
 
 const MyComputesPage = () => {
     const { oceanConfig } = useContext(OceanConfigContext);
@@ -55,7 +56,9 @@ const MyComputesPage = () => {
         <div className="bg-white rounded-md h-full overflow-y-scroll">
             <h1 className="font-light text-xl p-5 text-center">Compute Status</h1>
             {isLoading ? (
-                <p>Loading...</p>
+                <div className="flex justify-center align-middle items-center h-80v">
+                    <MoonLoader color="#000000" size={30} />
+                </div>
             ) : (
                 <div className="p-5">
                     {computeJobs.map((computeJob) => (

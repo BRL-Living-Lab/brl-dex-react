@@ -1,5 +1,6 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
+import { MoonLoader } from "react-spinners";
 
 const ComputeCard = ({ computeJob }) => {
     const [algoDDO, setAlgoDDO] = useState(null);
@@ -56,7 +57,9 @@ const ComputeCard = ({ computeJob }) => {
     return (
         <div className="w-full border-b border-t p-5">
             {isLoading ? (
-                <div>loading </div>
+                <div className="flex justify-center align-middle items-center h-80v">
+                    <MoonLoader color="#000000" size={30} />
+                </div>
             ) : (
                 <div>
                     <div className="flex justify-between items-center ">

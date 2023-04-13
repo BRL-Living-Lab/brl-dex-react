@@ -231,6 +231,14 @@ const PublishPage = () => {
                     allowNetworkAccess: true,
                 };
             }
+
+            if (assetType === "algorithmRadio") {
+                ddo.metadata.algorithm.container.entryPoint = entryPoint;
+                ddo.metadata.algorithm.container.image = image;
+                ddo.metadata.algorithm.container.tag = tag;
+                ddo.metadata.algorithm.container.checksum = checksum;
+            }
+
             ddo.services[0].type = serviceType === "computeRadio" ? "compute" : "access";
             ddo.services[0].files = await providerResponse;
             ddo.services[0].name = serviceName;
@@ -243,6 +251,8 @@ const PublishPage = () => {
             providerResponse = await ProviderInstance.encrypt(ddo, chain, providerUrl);
             const encryptedResponse = await providerResponse;
             const validateResult = await aquarius.validate(ddo);
+
+            console.log({ ddo });
 
             // // Next you can check if if the ddo is valid by checking if validateResult.valid returned true
 
@@ -304,7 +314,8 @@ const PublishPage = () => {
     };
 
     return (
-        <div className="w-full justify-center ">
+        <div className="bg-white rounded-md h-full overflow-y-scroll">
+            {" "}
             <h1 className="font-light text-xl p-5 text-center">Publish Asset </h1>
             <form className=" flex flex-col w-full">
                 <div className="grid grid-cols-2 gap-1">
@@ -321,7 +332,7 @@ const PublishPage = () => {
                                     type="text"
                                     name="name"
                                     id="name"
-                                    className="mb-1 block w-full rounded-md border-gray-400 border-solid border-2 px-3 py-2 mt-1"
+                                    className="mb-1 block w-full rounded-md border-gray-400 border-solid border-2 px-3 py-2 mt-1 bg-gray-50"
                                     placeholder="e.g Health data asset"
                                 />
                             </div>
@@ -338,7 +349,7 @@ const PublishPage = () => {
                                     type="text"
                                     name="author"
                                     id="author"
-                                    className="mb-1 block w-full rounded-md border-gray-400 border-solid border-2 px-3 py-2 mt-1"
+                                    className="mb-1 block w-full rounded-md border-gray-400 border-solid border-2 px-3 py-2 mt-1 bg-gray-50"
                                     placeholder="e.g John"
                                 />
                             </div>
@@ -355,7 +366,7 @@ const PublishPage = () => {
                                     name="nftName"
                                     placeholder="e.g ATLANTEAN"
                                     id="nftName"
-                                    className="mb-1 block w-full rounded-md border-gray-400 border-solid border-2 px-3 py-2 mt-1"
+                                    className="mb-1 block w-full rounded-md border-gray-400 border-solid border-2 px-3 py-2 mt-1 bg-gray-50"
                                 />
                             </div>
                         </div>
@@ -371,7 +382,7 @@ const PublishPage = () => {
                                     name="symbol"
                                     id="symbol"
                                     placeholder="e.g ATN"
-                                    className="mb-1 block w-full rounded-md border-gray-400 border-solid border-2 px-3 py-2 mt-1"
+                                    className="mb-1 block w-full rounded-md border-gray-400 border-solid border-2 px-3 py-2 mt-1 bg-gray-50"
                                 />
                             </div>
                         </div>
@@ -391,7 +402,7 @@ const PublishPage = () => {
                                     type="text"
                                     name="fileUrl"
                                     id="fileUrl"
-                                    className="mb-1 block w-full rounded-md border-gray-400 border-solid border-2 px-3 py-2 mt-1"
+                                    className="mb-1 block w-full rounded-md border-gray-400 border-solid border-2 px-3 py-2 mt-1 bg-gray-50"
                                     placeholder="https://api.xyz/asset_url"
                                 />
                             </div>
@@ -408,7 +419,7 @@ const PublishPage = () => {
                                     type="text"
                                     name="providerURL"
                                     id="providerURL"
-                                    className="mb-1 block w-full rounded-md border-gray-400 border-solid border-2 px-3 py-2 mt-1"
+                                    className="mb-1 block w-full rounded-md border-gray-400 border-solid border-2 px-3 py-2 mt-1 bg-gray-50"
                                     placeholder="www.example.com"
                                 />
                             </div>
@@ -424,7 +435,7 @@ const PublishPage = () => {
                                     type="text"
                                     name="sampleFileURL"
                                     id="sampleFileURL"
-                                    className="mb-1 block w-full rounded-md border-gray-400 border-solid border-2 px-3 py-2 mt-1"
+                                    className="mb-1 block w-full rounded-md border-gray-400 border-solid border-2 px-3 py-2 mt-1 bg-gray-50"
                                     placeholder="https://api.xyz/sample_file"
                                 />
                             </div>
@@ -437,7 +448,7 @@ const PublishPage = () => {
                                 <input
                                     onChange={setPublishDetails}
                                     type="number"
-                                    className="mb-1 block w-full rounded-md border-gray-400 border-solid border-2 px-3 py-2 mt-1"
+                                    className="mb-1 block w-full rounded-md border-gray-400 border-solid border-2 px-3 py-2 mt-1 bg-gray-50"
                                     id="timeout"
                                     name="timeout"
                                     placeholder="e.g 3000"
@@ -459,7 +470,7 @@ const PublishPage = () => {
                                         id="description"
                                         name="description"
                                         rows="3"
-                                        className="mb-1 block w-full rounded-md border-gray-400 border-solid border-2 px-3 py-2 mt-1"
+                                        className="mb-1 block w-full rounded-md border-gray-400 border-solid border-2 px-3 py-2 mt-1 bg-gray-50"
                                         placeholder="This asset ......"
                                     ></textarea>
                                 </div>
@@ -473,7 +484,7 @@ const PublishPage = () => {
                                 <input
                                     onChange={setPublishDetails}
                                     type="text"
-                                    className="mb-1 block w-full rounded-md border-gray-400 border-solid border-2 px-3 py-2 mt-1"
+                                    className="mb-1 block w-full rounded-md border-gray-400 border-solid border-2 px-3 py-2 mt-1 bg-gray-50"
                                     id="serviceName"
                                     placeholder="My service 1"
                                     name="serviceName"
@@ -520,7 +531,7 @@ const PublishPage = () => {
                                         <input
                                             onChange={setPublishDetails}
                                             type="text"
-                                            className="mb-1 block w-full rounded-md border-gray-400 border-solid border-2 px-3 py-2 mt-1"
+                                            className="mb-1 block w-full rounded-md border-gray-400 border-solid border-2 px-3 py-2 mt-1 bg-gray-50"
                                             id="entryPoint"
                                             name="entryPoint"
                                             value={entryPoint}
@@ -533,7 +544,7 @@ const PublishPage = () => {
                                         <input
                                             onChange={setPublishDetails}
                                             type="text"
-                                            className="mb-1 block w-full rounded-md border-gray-400 border-solid border-2 px-3 py-2 mt-1"
+                                            className="mb-1 block w-full rounded-md border-gray-400 border-solid border-2 px-3 py-2 mt-1 bg-gray-50"
                                             id="image"
                                             name="image"
                                             value={image}
@@ -546,7 +557,7 @@ const PublishPage = () => {
                                         <input
                                             onChange={setPublishDetails}
                                             type="text"
-                                            className="mb-1 block w-full rounded-md border-gray-400 border-solid border-2 px-3 py-2 mt-1"
+                                            className="mb-1 block w-full rounded-md border-gray-400 border-solid border-2 px-3 py-2 mt-1 bg-gray-50"
                                             id="tag"
                                             name="tag"
                                             value={tag}
@@ -559,7 +570,7 @@ const PublishPage = () => {
                                         <input
                                             onChange={setPublishDetails}
                                             type="text"
-                                            className="mb-1 block w-full rounded-md border-gray-400 border-solid border-2 px-3 py-2 mt-1"
+                                            className="mb-1 block w-full rounded-md border-gray-400 border-solid border-2 px-3 py-2 mt-1 bg-gray-50"
                                             id="checksum"
                                             name="checksum"
                                             value={checksum}
@@ -638,7 +649,7 @@ const PublishPage = () => {
                     <button
                         onClick={createNft}
                         type="submit"
-                        className="bg-purple-500 hover:bg-purple-700 text-white  py-2 px-4 rounded"
+                        className="bg-purple-700 hover:bg-purple-800 text-white  py-2 px-4 rounded w-1/7"
                     >
                         Publish
                     </button>

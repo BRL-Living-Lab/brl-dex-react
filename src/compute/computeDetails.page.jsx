@@ -4,6 +4,7 @@ import { AccountContext, OceanConfigContext } from "../App";
 import Web3 from "web3";
 import { ProviderInstance } from "@oceanprotocol/lib";
 import { BsDownload } from "react-icons/bs";
+import { MoonLoader } from "react-spinners";
 
 const ComputeDetails = () => {
     const { currentAccount, _ } = useContext(AccountContext);
@@ -78,12 +79,14 @@ const ComputeDetails = () => {
     };
 
     return (
-        <div>
+        <div className="bg-white rounded-md h-full">
             {" "}
             {isLoading ? (
-                <p>Loading...</p>
+                <div className="flex justify-center align-middle items-center h-80v">
+                    <MoonLoader color="#000000" size={30} />
+                </div>
             ) : (
-                <div className="bg-gray-100 rounded-md shadow-md">
+                <div>
                     <h1 className="font-light text-xl p-5 text-center">Compute Job Details</h1>
                     <div className="grid grid-cols-2 gap-4 p-5">
                         <div>
@@ -112,7 +115,7 @@ const ComputeDetails = () => {
                         </div>
                         <div className="col-span-2">
                             <p className="text-gray-600 font-medium">Results:</p>
-                            {computeJob.results.map((result, index) => (
+                            {computeJob.results?.map((result, index) => (
                                 <div key={index} className="flex justify-start space-x-2">
                                     <p className="text-gray-800">{result.filename}</p>
                                     <p className="text-gray-800">({result.filesize} bytes)</p>
