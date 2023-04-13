@@ -305,6 +305,7 @@ const PublishPage = () => {
 
     return (
         <div className="w-full justify-center ">
+            <h1 className="font-light text-xl p-5 text-center">Publish Asset </h1>
             <form className=" flex flex-col w-full">
                 <div className="grid grid-cols-2 gap-1">
                     {/* Column 1 */}
