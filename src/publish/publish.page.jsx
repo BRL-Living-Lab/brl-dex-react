@@ -2,6 +2,7 @@ import { Aquarius, Datatoken, Nft, NftFactory, ProviderInstance, ZERO_ADDRESS, g
 import { useContext, useState } from "react";
 import { AccountContext, OceanConfigContext } from "../App";
 import Web3 from "web3";
+import { toast } from "react-toastify";
 
 const PublishPage = () => {
     const { oceanConfig } = useContext(OceanConfigContext);
@@ -187,6 +188,14 @@ const PublishPage = () => {
 
             const result = await Factory.createNftWithDatatoken(owner, nftParamsAsset, datatokenParams);
             console.log({ result });
+            toast.success("NFT Deployed with Datatoken", {
+                position: "bottom-right",
+                autoClose: 2000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+            });
 
             const nftAddress = result.events.NFTCreated.returnValues[0];
             const datatokenAddressAsset = result.events.TokenCreated.returnValues[0];
@@ -267,10 +276,28 @@ const PublishPage = () => {
                     encryptedResponse,
                     validateResult.hash
                 );
-                alert("Your data asset is created!");
+                toast.success("Successfully set DDO in NFT Metadata", {
+                    position: "bottom-right",
+                    autoClose: 2000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                });
+                toast.success("Asset created successfully", {
+                    position: "top-center",
+                    autoClose: 5000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                });
                 return ddo.id;
             } else {
-                alert("Invalid DDO");
+                toast.error("Asset creation failed", {
+                    position: "top-center",
+                    autoClose: 5000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                });
                 return null;
             }
         }
@@ -280,6 +307,13 @@ const PublishPage = () => {
         e.preventDefault();
 
         let assetId;
+
+        const createAssetToast = toast.info("Sign Transaction on wallet when prompted", {
+            position: "top-center",
+            autoClose: false,
+            hideProgressBar: false,
+            closeOnClick: true,
+        });
 
         if (assetType === "algorithmRadio") {
             ALGORITHM_ASSET_URL.files[0].url = fileUrl;
@@ -302,6 +336,8 @@ const PublishPage = () => {
                 oceanConfig.providerUri
             );
         }
+
+        toast.dismiss(createAssetToast);
 
         console.log(`asset id: ${assetId}`);
     };
