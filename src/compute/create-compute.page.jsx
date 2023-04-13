@@ -194,14 +194,14 @@ const CreateCompute = () => {
     };
 
     return (
-        <div>
+        <div className="bg-white rounded-md h-full overflow-y-scroll">
             <h1 className="font-light text-xl p-5 text-center">Create Compute </h1>
 
             <div className="grid grid-cols-2 gap-1">
                 <div>
-                    <h2 className="font-light text-xl p-5" >Dataset</h2>
-                    <label className="font-semibold p-1">Dataset DID:</label>
-                    <div className="flex items-center space-x-2">
+                    <h2 className="font-light text-xl p-5">Dataset</h2>
+                    <label className="font-semibold p-5">Dataset DID:</label>
+                    <div className="flex items-center space-x-2 p-5">
                         <input
                             type="text"
                             className="w-1/2 rounded-md border-gray-400 border-solid border-2 px-3 py-2 bg-gray-50"
@@ -244,7 +244,9 @@ const CreateCompute = () => {
                                             id={`service-${index}`}
                                             className="mr-2"
                                         />
-                                        <label>{service.type} - {service.id} - {index}</label>
+                                        <label>
+                                            {service.type} - {service.id} - {index}
+                                        </label>
                                     </div>
                                 );
                             })}
@@ -264,11 +266,10 @@ const CreateCompute = () => {
                 </div>
 
                 <div>
-
                     <h2 className="font-light text-xl text p-5">Algorithm</h2>
 
-                    <label className="font-semibold">Algorithm DID:</label>
-                    <div className="flex items-center space-x-2">
+                    <label className="font-semibold p-5">Algorithm DID:</label>
+                    <div className="flex items-center space-x-2 p-5">
                         <input
                             type="text"
                             className="w-1/2 rounded-md border-gray-400 border-solid border-2 px-3 py-2 bg-gray-50"
@@ -312,7 +313,9 @@ const CreateCompute = () => {
                                             id={`service-${index}`}
                                             className="mr-2"
                                         />
-                                        <label>{service.type} - {service.id} - {index}</label>
+                                        <label>
+                                            {service.type} - {service.id} - {index}
+                                        </label>
                                     </div>
                                 );
                             })}
@@ -324,27 +327,31 @@ const CreateCompute = () => {
                         <div>
                             <p>
                                 Service Datatoken: {computeData.algorithmDDO.datatokens[algorithmService].name} (
-                                {computeData.algorithmDDO.datatokens[algorithmService].symbol}) Balance: {algorithmBalance}
+                                {computeData.algorithmDDO.datatokens[algorithmService].symbol}) Balance:{" "}
+                                {algorithmBalance}
                             </p>
                         </div>
                     )}
-
                 </div>
-
             </div>
 
             {datasetBalance > 0 && algorithmBalance > 0 ? (
                 <div className="flex justify-center mt-1">
-                        <button className="bg-purple-700 items-center mt-6 hover:bg-purple-800 text-white  py-2 px-4 rounded w-1/7" onClick={createCompute}>Create Compute</button>
-                        </div>
-                    ) : computeData.datasetDDO !== null &&
-                        computeData.algorithmDDO !== null &&
-                        datasetService !== null &&
-                        algorithmService != null ? (
-                        <p className="mt-8 text-center font-bold">Insufficient Balance</p>
-                    ) : (
-                        ""
-                    )}
+                    <button
+                        className="bg-purple-700 items-center mt-6 hover:bg-purple-800 text-white  py-2 px-4 rounded w-1/7"
+                        onClick={createCompute}
+                    >
+                        Create Compute
+                    </button>
+                </div>
+            ) : computeData.datasetDDO !== null &&
+              computeData.algorithmDDO !== null &&
+              datasetService !== null &&
+              algorithmService != null ? (
+                <p className="mt-8 text-center font-bold">Insufficient Balance</p>
+            ) : (
+                ""
+            )}
         </div>
     );
 };
