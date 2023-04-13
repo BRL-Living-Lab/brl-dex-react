@@ -196,131 +196,155 @@ const CreateCompute = () => {
     return (
         <div>
             <h1 className="font-light text-xl p-5 text-center">Create Compute </h1>
-            <h2>Dataset</h2>
-            <label>DID:</label>
-            <input
-                type="text"
-                value={computeData.datasetDID}
-                onChange={setComputeDetails}
-                name="datasetDID"
-                disabled={computeData.confirmDatasetDID}
-            ></input>
-            {computeData.datasetDID === "" ? (
-                ""
-            ) : (
-                <button
-                    onClick={() => {
-                        console.log(computeData.confirmDatasetDID);
-                        setComputeData({
-                            ...computeData,
-                            confirmDatasetDID: !computeData.confirmDatasetDID,
-                        });
-                    }}
-                >
-                    {computeData.confirmDatasetDID ? <AiFillCheckSquare /> : <AiOutlineCheckSquare />}
-                </button>
-            )}
 
-            {computeData.datasetDDO === null ? (
-                ""
-            ) : (
+            <div className="grid grid-cols-2 gap-1">
                 <div>
-                    <h2>Select Service</h2>
-                    {computeData.datasetDDO.services.map((service, index) => {
-                        return (
-                            <div>
-                                <input
-                                    type="radio"
-                                    name="datasetService"
-                                    value={index}
-                                    onChange={(e) => setDatasetService(e.target.value)}
-                                />{" "}
-                                {service.type} - {service.id} - {index}
-                            </div>
-                        );
-                    })}
-                </div>
-            )}
+                    <h2 className="font-light text-xl p-5" >Dataset</h2>
+                    <label className="font-semibold p-1">Dataset DID:</label>
+                    <div className="flex items-center space-x-2">
+                        <input
+                            type="text"
+                            className="w-1/2 rounded-md border-gray-400 border-solid border-2 px-3 py-2 bg-gray-50"
+                            value={computeData.datasetDID}
+                            onChange={setComputeDetails}
+                            name="datasetDID"
+                            disabled={computeData.confirmDatasetDID}
+                            placeholder="Enter dataset DID"
+                        />
+                        {computeData.datasetDID === "" ? (
+                            ""
+                        ) : (
+                            <button
+                                onClick={() => {
+                                    console.log(computeData.confirmDatasetDID);
+                                    setComputeData({
+                                        ...computeData,
+                                        confirmDatasetDID: !computeData.confirmDatasetDID,
+                                    });
+                                }}
+                                className="p-1 rounded-md bg-gray-200 hover:bg-gray-300 focus:outline-none"
+                            >
+                                {computeData.confirmDatasetDID ? <AiFillCheckSquare /> : <AiOutlineCheckSquare />}
+                            </button>
+                        )}
+                    </div>
+                    {computeData.datasetDDO === null ? (
+                        ""
+                    ) : (
+                        <div className="mt-1">
+                            <h2 className="font-light p-1">Select Service</h2>
+                            {computeData.datasetDDO.services.map((service, index) => {
+                                return (
+                                    <div className="flex items-center mt-1">
+                                        <input
+                                            type="radio"
+                                            name="datasetService"
+                                            value={index}
+                                            onChange={(e) => setDatasetService(e.target.value)}
+                                            id={`service-${index}`}
+                                            className="mr-2"
+                                        />
+                                        <label>{service.type} - {service.id} - {index}</label>
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    )}
 
-            {datasetService === null ? (
-                ""
-            ) : (
+                    {datasetService === null ? (
+                        ""
+                    ) : (
+                        <div className="p-1">
+                            <p>
+                                Service Datatoken: {computeData.datasetDDO.datatokens[datasetService].name} (
+                                {computeData.datasetDDO.datatokens[datasetService].symbol}) Balance: {datasetBalance}
+                            </p>
+                        </div>
+                    )}
+                </div>
+
                 <div>
-                    <p>
-                        Service Datatoken: {computeData.datasetDDO.datatokens[datasetService].name} (
-                        {computeData.datasetDDO.datatokens[datasetService].symbol}) Balance: {datasetBalance}
-                    </p>
+
+                    <h2 className="font-light text-xl text p-5">Algorithm</h2>
+
+                    <label className="font-semibold">Algorithm DID:</label>
+                    <div className="flex items-center space-x-2">
+                        <input
+                            type="text"
+                            className="w-1/2 rounded-md border-gray-400 border-solid border-2 px-3 py-2 bg-gray-50"
+                            value={computeData.algorithmDID}
+                            onChange={setComputeDetails}
+                            name="algorithmDID"
+                            disabled={computeData.confirmAlgorithmDID}
+                            placeholder="Enter Algorithm DID"
+                        />
+                        {computeData.algorithmDID === "" ? (
+                            ""
+                        ) : (
+                            <button
+                                onClick={() => {
+                                    console.log(computeData.confirmAlgorithmDID);
+                                    setComputeData({
+                                        ...computeData,
+                                        confirmAlgorithmDID: !computeData.confirmAlgorithmDID,
+                                    });
+                                }}
+                                className="p-1 rounded-md bg-gray-200 hover:bg-gray-300 focus:outline-none"
+                            >
+                                {computeData.confirmAlgorithmDID ? <AiFillCheckSquare /> : <AiOutlineCheckSquare />}
+                            </button>
+                        )}
+                    </div>
+
+                    {computeData.algorithmDDO === null ? (
+                        ""
+                    ) : (
+                        <div className="mt-1">
+                            <h2 className="font-light p-1">Select Service</h2>
+                            {computeData.algorithmDDO.services.map((service, index) => {
+                                return (
+                                    <div className="flex items-center mt-1">
+                                        <input
+                                            type="radio"
+                                            name="algorithmService"
+                                            value={index}
+                                            onChange={(e) => setAlgorithmService(e.target.value)}
+                                            id={`service-${index}`}
+                                            className="mr-2"
+                                        />
+                                        <label>{service.type} - {service.id} - {index}</label>
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    )}
+                    {algorithmService === null ? (
+                        ""
+                    ) : (
+                        <div>
+                            <p>
+                                Service Datatoken: {computeData.algorithmDDO.datatokens[algorithmService].name} (
+                                {computeData.algorithmDDO.datatokens[algorithmService].symbol}) Balance: {algorithmBalance}
+                            </p>
+                        </div>
+                    )}
+
                 </div>
-            )}
 
-            <h2>Algorithm</h2>
-
-            <label>DID:</label>
-            <input
-                type="text"
-                value={computeData.algorithmDID}
-                onChange={setComputeDetails}
-                name="algorithmDID"
-                disabled={computeData.confirmAlgorithmDID}
-            ></input>
-            {computeData.algorithmDID === "" ? (
-                ""
-            ) : (
-                <button
-                    onClick={() => {
-                        console.log(computeData.confirmAlgorithmDID);
-                        setComputeData({
-                            ...computeData,
-                            confirmAlgorithmDID: !computeData.confirmAlgorithmDID,
-                        });
-                    }}
-                >
-                    {computeData.confirmAlgorithmDID ? <AiFillCheckSquare /> : <AiOutlineCheckSquare />}
-                </button>
-            )}
-
-            {computeData.algorithmDDO === null ? (
-                ""
-            ) : (
-                <div>
-                    <h2>Select Service</h2>
-                    {computeData.algorithmDDO.services.map((service, index) => {
-                        return (
-                            <div>
-                                <input
-                                    type="radio"
-                                    name="algorithmService"
-                                    value={index}
-                                    onChange={(e) => setAlgorithmService(e.target.value)}
-                                />{" "}
-                                {service.type} - {service.id} - {index}
-                            </div>
-                        );
-                    })}
-                </div>
-            )}
-
-            {algorithmService === null ? (
-                ""
-            ) : (
-                <div>
-                    <p>
-                        Service Datatoken: {computeData.algorithmDDO.datatokens[algorithmService].name} (
-                        {computeData.algorithmDDO.datatokens[algorithmService].symbol}) Balance: {algorithmBalance}
-                    </p>
-                </div>
-            )}
+            </div>
 
             {datasetBalance > 0 && algorithmBalance > 0 ? (
-                <button onClick={createCompute}>Create Compute</button>
-            ) : computeData.datasetDDO !== null &&
-              computeData.algorithmDDO !== null &&
-              datasetService !== null &&
-              algorithmService != null ? (
-                <p>Insufficient Balance</p>
-            ) : (
-                ""
-            )}
+                <div className="flex justify-center mt-1">
+                        <button className="bg-purple-700 items-center mt-6 hover:bg-purple-800 text-white  py-2 px-4 rounded w-1/7" onClick={createCompute}>Create Compute</button>
+                        </div>
+                    ) : computeData.datasetDDO !== null &&
+                        computeData.algorithmDDO !== null &&
+                        datasetService !== null &&
+                        algorithmService != null ? (
+                        <p className="mt-8 text-center font-bold">Insufficient Balance</p>
+                    ) : (
+                        ""
+                    )}
         </div>
     );
 };
