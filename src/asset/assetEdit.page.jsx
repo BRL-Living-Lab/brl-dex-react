@@ -5,6 +5,7 @@ import { useParams } from "react-router-dom";
 import { AccountContext, OceanConfigContext } from "../App";
 import Web3 from "web3";
 import { MoonLoader } from "react-spinners";
+import { toast } from "react-toastify";
 
 // import { gql } from "graphql-tag";
 
@@ -112,10 +113,24 @@ const AssetPage = () => {
                 encryptedResponse,
                 validateResult.hash
             );
-            alert("Your data asset is updated!");
+            // alert("Your data asset is updated!");
+            toast.success("Your data asset is updated!", {
+                position: "bottom-right",
+                autoClose: 2000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+            });
             return ddo.id;
         } else {
-            alert("Invalid DDO");
+            // alert("Invalid DDO");
+            toast.error("Invalid DDO", {
+                position: "top-center",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+            });
             return null;
         }
     };
