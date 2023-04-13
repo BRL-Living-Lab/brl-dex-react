@@ -73,12 +73,16 @@ const ComputeCard = ({ computeJob }) => {
                             <div>
                                 {" "}
                                 <label className="text-base font-semibold">Created:</label>{" "}
-                                {Date(computeJob.dateCreated)}
+                                {new Date(Date(computeJob.dateCreated)).toDateString() +
+                                    " " +
+                                    new Date(Date(computeJob.dateCreated)).toLocaleTimeString()}
                             </div>
                             <div>
                                 {" "}
                                 <label className="text-base font-semibold">Finished:</label>{" "}
-                                {Date(computeJob.dateFinished)}
+                                {new Date(Date(computeJob.dateFinished)).toDateString() +
+                                    " " +
+                                    new Date(Date(computeJob.dateFinished)).toLocaleTimeString()}
                             </div>
                         </div>
                         <div className="w-1/7 text-center bg-gray-200 p-5">
