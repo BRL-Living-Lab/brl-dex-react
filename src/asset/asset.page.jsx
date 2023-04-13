@@ -28,10 +28,12 @@ const AssetPage = () => {
     const { oceanConfig } = useContext(OceanConfigContext);
     const [formData, setFormData] = useState({
         receiver_address: "",
+        num_tokens: null
     });
 
     const {
         receiver_address,
+        num_tokens
     } = formData;
 
 
@@ -83,7 +85,7 @@ const AssetPage = () => {
             await datatoken.mint(
                 datatokenAddress,
                 publisherAccount,
-                '4', // number of datatokens sent to the receiver
+                num_tokens, // number of datatokens sent to the receiver
                 receiverAddress
             );
             let receiverBalance = await datatoken.balance(
@@ -127,33 +129,37 @@ const AssetPage = () => {
                     validUntil: initializeData.providerFee.validUntil,
                 };
 
-                const txid = await datatoken.startOrder(
-                    datatokenAddress,
-                    currentAccount,
-                    currentAccount,
-                    0,
-                    providerFees
-                );
+                try {
+                    const txid = await datatoken.startOrder(
+                        datatokenAddress,
+                        currentAccount,
+                        currentAccount,
+                        0,
+                        providerFees
+                    );
 
-                const downloadURL = await ProviderInstance.getDownloadUrl(
-                    ddo.id,
-                    currentAccount,
-                    ddo.services[0].id,
-                    0,
-                    txid.transactionHash,
-                    oceanConfig.providerUri,
-                    web3
-                );
+                    const downloadURL = await ProviderInstance.getDownloadUrl(
+                        ddo.id,
+                        currentAccount,
+                        ddo.services[0].id,
+                        0,
+                        txid.transactionHash,
+                        oceanConfig.providerUri,
+                        web3
+                    );
 
-                // const asset_file = await downloadFile(downloadURL);
+                    // const asset_file = await downloadFile(downloadURL);
 
-                const link = document.createElement('a');
-                link.href = downloadURL;
-                link.download = 'Asset.pdf';
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-                console.log(downloadURL);
+                    const link = document.createElement('a');
+                    link.href = downloadURL;
+                    link.download = 'Asset.pdf';
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                    console.log(downloadURL);
+                } catch (error) {
+                    alert(error)
+                }
             }
         }
     };
@@ -176,82 +182,54 @@ const AssetPage = () => {
             {isLoading ? (
                 <p>Loading</p>
             ) : (
-                    <div>
+                <div>
+
+
+                    <div className="bg-white p-6 rounded-lg shadow-md">
                         <div className="flex justify-between items-center mb-4">
-                            <div className="flex">
+                            <h1 className="text-2xl ">Asset details</h1>
+                            <div className="flex items-center">
                                 <button
-                                    className="border border-blue-500 hover:bg-blue-100 text-blue-500 hover:text-blue-700 font-bold py-2 px-4 rounded shadow mr-2"
+                                    className="mr-4 border border-blue-500 hover:bg-blue-100 text-blue-500 hover:text-blue-700  py-2 px-4 rounded shadow"
                                     onClick={handleModifyAsset}
                                 >
                                     Modify Asset
                                 </button>
-
-                                <button
-                                    className="border border-blue-800 hover:bg-blue-200 text-blue-800 hover:text-blue-900 font-bold py-2 px-4 rounded shadow mr-2"
-                                    onClick={handleDownloadAsset}
-                                >
-                                    Download Asset
-                                </button>
-
-
-                                <div className="flex items-center">
-                                    <input
-                                        value={receiver_address}
-                                    onChange={setMintDetails}
-                                    type="text"
-                                    name="receiver_address"
-                                    id="receiver_address"
-                                    placeholder="Receiver Address"
-                                    className="w-64 px-3 py-2 mr-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline"
-                                />
-                                <button
-                                    className="bg-blue-500 hover:bg-blue-400 text-white font-bold py-2 px-4 rounded"
-                                    type="submit"
-                                    onClick={mintDatatoken}
-                                // disabled={!this.input.value}
-                                >
-                                    Mint
-                                </button>
                             </div>
                         </div>
-                    </div>
-
-
-                    <div className="bg-white p-6 rounded-lg shadow-md">
-                        <h1 className="text-2xl font-bold mb-4">Asset details</h1>
                         <div className="flex items-center mb-2">
-                            <label className="w-32 font-bold">DID:</label>
+                            <label className="w-32 ">DID:</label>
                             <div className="text-gray-600">{ddo.id}</div>
                         </div>
                         <div className="flex items-center mb-2">
-                            <label className="w-32 font-bold">NFT Address:</label>
+                            <label className="w-32 ">NFT Address:</label>
                             <div className="text-gray-600">{ddo.nftAddress}</div>
                         </div>
                         <div className="flex flex-col mt-6">
-                            <label className="font-bold mb-2">Metadata:</label>
+                            <label className=" mb-2">Metadata:</label>
                             <ul className="list-disc ml-6">
                                 <li className="flex items-center">
-                                    <label className="w-32 font-bold">Created:</label>
+                                    <label className="w-32 ">Created:</label>
                                     <div className="text-gray-600">{ddo.metadata.created}</div>
                                 </li>
                                 <li className="flex items-center">
-                                    <label className="w-32 font-bold">Updated:</label>
+                                    <label className="w-32 ">Updated:</label>
                                     <div className="text-gray-600">{ddo.metadata.updated}</div>
                                 </li>
                                 <li className="flex items-center">
-                                    <label className="w-32 font-bold">Type:</label>
+                                    <label className="w-32 ">Type:</label>
                                     <div className="text-gray-600">{ddo.metadata.type}</div>
                                 </li>
                                 <li className="flex items-center">
-                                    <label className="w-32 font-bold">Name:</label>
+                                    <label className="w-32 ">Name:</label>
                                     <div className="text-gray-600">{ddo.metadata.name}</div>
                                 </li>
                                 <li className="flex items-center">
-                                    <label className="w-32 font-bold">Description:</label>
+                                    <label className="w-32 ">Description:</label>
                                     <div className="text-gray-600 truncate w-64" title={ddo.metadata.description}>{ddo.metadata.description}</div>
                                 </li>
                                 <li className="flex items-center">
-                                    <label className="w-32 font-bold">Author:</label>
+                                    <label className="w-32 ">Author:</label>
                                     <div className="text-gray-600">{ddo.metadata.author}</div>
                                 </li>
                             </ul>
@@ -259,24 +237,35 @@ const AssetPage = () => {
                     </div>
                     <br></br>
                     <div className="bg-white p-6 rounded-lg shadow-md">
-                        <h1 className="text-2xl font-bold mb-4">Services</h1>
+                        <div className="flex justify-between items-center mb-4">
+                            <h1 className="text-2xl ">Services</h1>
+                            <div className="flex items-center">
+                                <button
+                                    disabled = {ddo.services[0].type === "compute"}
+                                    className="mr-4 border border-blue-800 hover:bg-blue-200 text-blue-800 hover:text-blue-900  py-2 px-4 rounded shadow"
+                                    onClick={handleDownloadAsset}
+                                >
+                                    Download Asset
+                                </button>
+                            </div>
+                        </div>
 
                         {ddo.services.map((service) => (
                             <div key={service.id} className="rounded-lg p-4">
                                 <div className="flex flex-col mb-4">
-                                    <label className="text-gray-700 font-bold mb-2">Type:</label>
+                                    <label className="text-gray-700  mb-2">Type:</label>
                                     <p className="text-gray-700">{service.type}</p>
                                 </div>
                                 <div className="flex flex-col mb-4">
-                                    <label className="text-gray-700 font-bold mb-2">Files:</label>
+                                    <label className="text-gray-700  mb-2">Files:</label>
                                     <p className="text-gray-700">{service.files.slice(0, 50)}</p>
                                 </div>
                                 <div className="flex flex-col mb-4">
-                                    <label className="text-gray-700 font-bold mb-2">Data Token Address:</label>
+                                    <label className="text-gray-700  mb-2">Data Token Address:</label>
                                     <p className="text-gray-700">{service.datatokenAddress}</p>
                                 </div>
                                 <div className="flex flex-col mb-4">
-                                    <label className="text-gray-700 font-bold mb-2">Service Endpoint:</label>
+                                    <label className="text-gray-700  mb-2">Service Endpoint:</label>
                                     <p className="text-gray-700">{service.serviceEndpoint}</p>
                                 </div>
                             </div>
@@ -287,46 +276,46 @@ const AssetPage = () => {
 
                     <br />
                     <div className="bg-white p-6 rounded-lg shadow-md">
-                        <h1 className="text-2xl font-bold mb-4">NFT Details</h1>
+                        <h1 className="text-2xl  mb-4">NFT Details</h1>
                         <div className="grid grid-cols-2 gap-4 mb-4">
                             <div className="col-span-2 sm:col-span-1">
-                                <label className="block text-gray-700 font-bold mb-2">
+                                <label className="block text-gray-700  mb-2">
                                     Address:
                                 </label>
                                 <p id="address" className="text-gray-700">{ddo.nft.address}</p>
                             </div>
                             <div className="col-span-2 sm:col-span-1">
-                                <label className="block text-gray-700 font-bold mb-2">
+                                <label className="block text-gray-700  mb-2">
                                     Name:
                                 </label>
                                 <p id="name" className="text-gray-700">{ddo.nft.name}</p>
                             </div>
                             <div className="col-span-2 sm:col-span-1">
-                                <label className="block text-gray-700 font-bold mb-2">
+                                <label className="block text-gray-700  mb-2">
                                     Symbol:
                                 </label>
                                 <p id="symbol" className="text-gray-700">{ddo.nft.symbol}</p>
                             </div>
                             <div className="col-span-2 sm:col-span-1">
-                                <label className="block text-gray-700 font-bold mb-2">
+                                <label className="block text-gray-700  mb-2">
                                     State:
                                 </label>
                                 <p id="state" className="text-gray-700">{ddo.nft.state}</p>
                             </div>
                             <div className="col-span-2 sm:col-span-1">
-                                <label className="block text-gray-700 font-bold mb-2">
+                                <label className="block text-gray-700  mb-2">
                                     Token URI:
                                 </label>
                                 <p id="tokenURI" className="text-gray-700">{ddo.nft.tokenURI}</p>
                             </div>
                             <div className="col-span-2 sm:col-span-1">
-                                <label className="block text-gray-700 font-bold mb-2">
+                                <label className="block text-gray-700  mb-2">
                                     Owner:
                                 </label>
                                 <p id="owner" className="text-gray-700">{ddo.nft.owner}</p>
                             </div>
                             <div className="col-span-2 sm:col-span-1">
-                                <label className="block text-gray-700 font-bold mb-2">
+                                <label className="block text-gray-700  mb-2">
                                     Created:
                                 </label>
                                 <p id="created" className="text-gray-700">{ddo.nft.created}</p>
@@ -335,24 +324,57 @@ const AssetPage = () => {
                     </div>
                     <br />
                     <div className="bg-white p-6 rounded-lg shadow-md">
-                        <h1 className="text-2xl font-bold mb-4">Data Tokens</h1>
+
+                        <div className="flex justify-between items-center mb-4">
+                            <h1 className="text-2xl  mb-4">Data Tokens</h1>
+
+                            <div className="flex items-center">
+                                <input
+                                    value={receiver_address}
+                                    onChange={setMintDetails}
+                                    type="text"
+                                    name="receiver_address"
+                                    id="receiver_address"
+                                    placeholder="Receiver Address"
+                                    className="w-64 px-3 py-2 mr-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline"
+                                />
+                                <input
+                                    value={num_tokens}
+                                    onChange={setMintDetails}
+                                    type="number"
+                                    name="num_tokens"
+                                    id="num_tokens"
+                                    placeholder="Tokens"
+                                    className="w-32 px-3 py-2 mr-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline"
+                                />
+                                <button
+                                    className="bg-blue-500 hover:bg-blue-400 text-white  py-2 px-4 rounded"
+                                    type="submit"
+                                    onClick={mintDatatoken}
+                                // disabled={!this.input.value}
+                                >
+                                    Mint
+                                </button>
+                            </div>
+                        </div>
+
                         <div className="grid grid-cols-2 gap-4 mb-4">
                             {ddo.datatokens.map((datatoken) => (
                                 <div key={datatoken.address}>
                                     <div className="flex flex-col mb-4">
-                                        <label className="text-gray-700 font-bold mb-2">Address:</label>
+                                        <label className="text-gray-700  mb-2">Address:</label>
                                         <p className="text-gray-700">{datatoken.address}</p>
                                     </div>
                                     <div className="flex flex-col mb-4">
-                                        <label className="text-gray-700 font-bold mb-2">Name:</label>
+                                        <label className="text-gray-700  mb-2">Name:</label>
                                         <p className="text-gray-700">{datatoken.name}</p>
                                     </div>
                                     <div className="flex flex-col mb-4">
-                                        <label className="text-gray-700 font-bold mb-2">Symbol:</label>
+                                        <label className="text-gray-700  mb-2">Symbol:</label>
                                         <p className="text-gray-700">{datatoken.symbol}</p>
                                     </div>
                                     <div className="flex flex-col mb-4">
-                                        <label className="text-gray-700 font-bold mb-2">Service ID:</label>
+                                        <label className="text-gray-700  mb-2">Service ID:</label>
                                         <p className="text-gray-700">{datatoken.serviceId}</p>
                                     </div>
                                 </div>

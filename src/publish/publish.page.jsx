@@ -305,6 +305,7 @@ const PublishPage = () => {
 
     return (
         <div className="w-full justify-center ">
+            <h1 className="font-light text-xl p-5 text-center">Publish Asset </h1>
             <form className=" flex flex-col w-full">
                 <div className="grid grid-cols-2 gap-1">
                     {/* Column 1 */}
@@ -312,7 +313,7 @@ const PublishPage = () => {
                         {/* Data Asset details */}
                         <div className="flex justify-center">
                             <div className="mb-3 xl:w-96">
-                                <label className="block font-bold mb-1">Data Asset Name</label>
+                                <label className="block  mb-1">Data Asset Name</label>
 
                                 <input
                                     value={name}
@@ -320,8 +321,8 @@ const PublishPage = () => {
                                     type="text"
                                     name="name"
                                     id="name"
-                                    className="mb-1 block w-full rounded-md border-blue-400 border-solid border-2 px-3 py-2 mt-1"
-                                    placeholder="Sample Data Name"
+                                    className="mb-1 block w-full rounded-md border-gray-400 border-solid border-2 px-3 py-2 mt-1"
+                                    placeholder="e.g Health data asset"
                                 />
                             </div>
                         </div>
@@ -329,7 +330,7 @@ const PublishPage = () => {
                         {/* Author */}
                         <div className="flex justify-center">
                             <div className="mb-3 xl:w-96">
-                                <label className="block font-bold mb-1">Author</label>
+                                <label className="block  mb-1">Author</label>
 
                                 <input
                                     value={author}
@@ -337,8 +338,8 @@ const PublishPage = () => {
                                     type="text"
                                     name="author"
                                     id="author"
-                                    className="mb-1 block w-full rounded-md border-blue-400 border-solid border-2 px-3 py-2 mt-1"
-                                    placeholder="Sample Author Name"
+                                    className="mb-1 block w-full rounded-md border-gray-400 border-solid border-2 px-3 py-2 mt-1"
+                                    placeholder="e.g John"
                                 />
                             </div>
                         </div>
@@ -346,14 +347,15 @@ const PublishPage = () => {
                         {/* NFT Name */}
                         <div className="flex justify-center">
                             <div className="mb-3 xl:w-96">
-                                <label className="block font-bold mb-1">NFT Name</label>
+                                <label className="block  mb-1">NFT Name</label>
                                 <input
                                     value={nftName}
                                     onChange={setPublishDetails}
                                     type="text"
                                     name="nftName"
+                                    placeholder="e.g ATLANTEAN"
                                     id="nftName"
-                                    className="mb-1 block w-full rounded-md border-blue-400 border-solid border-2 px-3 py-2 mt-1"
+                                    className="mb-1 block w-full rounded-md border-gray-400 border-solid border-2 px-3 py-2 mt-1"
                                 />
                             </div>
                         </div>
@@ -361,21 +363,22 @@ const PublishPage = () => {
                         {/* NFT symbol */}
                         <div className="flex justify-center">
                             <div className="mb-3 xl:w-96">
-                                <label className="block font-bold mb-1">NFT Symbol Name</label>
+                                <label className="block  mb-1">NFT Symbol Name</label>
                                 <input
                                     value={symbol}
                                     onChange={setPublishDetails}
                                     type="text"
                                     name="symbol"
                                     id="symbol"
-                                    className="mb-1 block w-full rounded-md border-blue-400 border-solid border-2 px-3 py-2 mt-1"
+                                    placeholder="e.g ATN"
+                                    className="mb-1 block w-full rounded-md border-gray-400 border-solid border-2 px-3 py-2 mt-1"
                                 />
                             </div>
                         </div>
                         {/* Data Asset URL */}
                         <div className="flex justify-center">
                             <div className="mb-3 xl:w-96">
-                                <label className="block font-bold mb-1">Data Asset URL</label>
+                                <label className="block  mb-1">Data Asset URL</label>
                                 {/* <div>
                                 https://raw.githubusercontent.com/oceanprotocol/test-algorithm/master/javascript/algo.js
                             </div>
@@ -388,8 +391,8 @@ const PublishPage = () => {
                                     type="text"
                                     name="fileUrl"
                                     id="fileUrl"
-                                    className="mb-1 block w-full rounded-md border-blue-400 border-solid border-2 px-3 py-2 mt-1"
-                                    placeholder="www.example.com"
+                                    className="mb-1 block w-full rounded-md border-gray-400 border-solid border-2 px-3 py-2 mt-1"
+                                    placeholder="https://api.xyz/asset_url"
                                 />
                             </div>
                         </div>
@@ -397,7 +400,7 @@ const PublishPage = () => {
                         {/* Provider URL */}
                         <div className="flex justify-center">
                             <div className="mb-3 xl:w-96">
-                                <label className="block font-bold mb-1">Provider URL</label>
+                                <label className="block  mb-1">Provider URL</label>
 
                                 <input
                                     value={providerURL}
@@ -405,7 +408,7 @@ const PublishPage = () => {
                                     type="text"
                                     name="providerURL"
                                     id="providerURL"
-                                    className="mb-1 block w-full rounded-md border-blue-400 border-solid border-2 px-3 py-2 mt-1"
+                                    className="mb-1 block w-full rounded-md border-gray-400 border-solid border-2 px-3 py-2 mt-1"
                                     placeholder="www.example.com"
                                 />
                             </div>
@@ -414,15 +417,15 @@ const PublishPage = () => {
                         {/* Sample File URL */}
                         <div className="flex justify-center">
                             <div className="mb-3 xl:w-96">
-                                <label className="block font-bold mb-1">Sample File URL</label>
+                                <label className="block  mb-1">Sample File URL</label>
                                 <input
                                     value={sampleFileURL}
                                     onChange={setPublishDetails}
                                     type="text"
                                     name="sampleFileURL"
                                     id="sampleFileURL"
-                                    className="mb-1 block w-full rounded-md border-blue-400 border-solid border-2 px-3 py-2 mt-1"
-                                    placeholder="www.example.com"
+                                    className="mb-1 block w-full rounded-md border-gray-400 border-solid border-2 px-3 py-2 mt-1"
+                                    placeholder="https://api.xyz/sample_file"
                                 />
                             </div>
                         </div>
@@ -430,11 +433,11 @@ const PublishPage = () => {
                         {/* Timeout */}
                         <div className="flex justify-center">
                             <div className="mb-3 xl:w-96">
-                                <label className="block font-bold mb-1">Timeout</label>
+                                <label className="block  mb-1">Timeout</label>
                                 <input
                                     onChange={setPublishDetails}
                                     type="number"
-                                    className="mb-1 block w-full rounded-md border-blue-400 border-solid border-2 px-3 py-2 mt-1"
+                                    className="mb-1 block w-full rounded-md border-gray-400 border-solid border-2 px-3 py-2 mt-1"
                                     id="timeout"
                                     name="timeout"
                                     placeholder="e.g 3000"
@@ -448,7 +451,7 @@ const PublishPage = () => {
                         {/* DESCRIPTION */}
                         <div className="flex justify-center">
                             <div className="mb-3 xl:w-96">
-                                <label className="block font-bold mb-1">Description</label>
+                                <label className="block  mb-1">Description</label>
                                 <div className="mt-1">
                                     <textarea
                                         value={description}
@@ -456,8 +459,8 @@ const PublishPage = () => {
                                         id="description"
                                         name="description"
                                         rows="3"
-                                        className="mb-1 block w-full rounded-md border-blue-400 border-solid border-2 px-3 py-2 mt-1"
-                                        placeholder="you@example.com"
+                                        className="mb-1 block w-full rounded-md border-gray-400 border-solid border-2 px-3 py-2 mt-1"
+                                        placeholder="This asset ......"
                                     ></textarea>
                                 </div>
                             </div>
@@ -466,13 +469,13 @@ const PublishPage = () => {
                         {/* service details */}
                         <div className="flex justify-center">
                             <div className="mb-3 xl:w-96">
-                                <label className="block font-bold mb-1">Service Name</label>
+                                <label className="block  mb-1">Service Name</label>
                                 <input
                                     onChange={setPublishDetails}
                                     type="text"
-                                    className="mb-1 block w-full rounded-md border-blue-400 border-solid border-2 px-3 py-2 mt-1"
+                                    className="mb-1 block w-full rounded-md border-gray-400 border-solid border-2 px-3 py-2 mt-1"
                                     id="serviceName"
-                                    placeholder="Service Name"
+                                    placeholder="My service 1"
                                     name="serviceName"
                                 />
                             </div>
@@ -480,7 +483,7 @@ const PublishPage = () => {
 
                         {/* Asset Type radio buttons */}
                         <div className="flex justify-center">
-                            <label className="block font-bold mt-2">Asset Type : </label>
+                            <label className="block  mt-2">Asset Type : </label>
                             <span>
                                 <div className="form-check form-check-inline">
                                     <input
@@ -513,11 +516,11 @@ const PublishPage = () => {
                             <div>
                                 <div className="flex justify-center">
                                     <div className="mb-3 xl:w-96">
-                                        <label className="block font-bold mb-1">Container Entry Point</label>
+                                        <label className="block  mb-1">Container Entry Point</label>
                                         <input
                                             onChange={setPublishDetails}
                                             type="text"
-                                            className="mb-1 block w-full rounded-md border-blue-400 border-solid border-2 px-3 py-2 mt-1"
+                                            className="mb-1 block w-full rounded-md border-gray-400 border-solid border-2 px-3 py-2 mt-1"
                                             id="entryPoint"
                                             name="entryPoint"
                                             value={entryPoint}
@@ -526,11 +529,11 @@ const PublishPage = () => {
                                 </div>
                                 <div className="flex justify-center">
                                     <div className="mb-3 xl:w-96">
-                                        <label className="block font-bold mb-1">Container Image</label>
+                                        <label className="block  mb-1">Container Image</label>
                                         <input
                                             onChange={setPublishDetails}
                                             type="text"
-                                            className="mb-1 block w-full rounded-md border-blue-400 border-solid border-2 px-3 py-2 mt-1"
+                                            className="mb-1 block w-full rounded-md border-gray-400 border-solid border-2 px-3 py-2 mt-1"
                                             id="image"
                                             name="image"
                                             value={image}
@@ -539,11 +542,11 @@ const PublishPage = () => {
                                 </div>
                                 <div className="flex justify-center">
                                     <div className="mb-3 xl:w-96">
-                                        <label className="block font-bold mb-1">Container Tag</label>
+                                        <label className="block  mb-1">Container Tag</label>
                                         <input
                                             onChange={setPublishDetails}
                                             type="text"
-                                            className="mb-1 block w-full rounded-md border-blue-400 border-solid border-2 px-3 py-2 mt-1"
+                                            className="mb-1 block w-full rounded-md border-gray-400 border-solid border-2 px-3 py-2 mt-1"
                                             id="tag"
                                             name="tag"
                                             value={tag}
@@ -552,11 +555,11 @@ const PublishPage = () => {
                                 </div>
                                 <div className="flex justify-center">
                                     <div className="mb-3 xl:w-96">
-                                        <label className="block font-bold mb-1">Container Checksum</label>
+                                        <label className="block  mb-1">Container Checksum</label>
                                         <input
                                             onChange={setPublishDetails}
                                             type="text"
-                                            className="mb-1 block w-full rounded-md border-blue-400 border-solid border-2 px-3 py-2 mt-1"
+                                            className="mb-1 block w-full rounded-md border-gray-400 border-solid border-2 px-3 py-2 mt-1"
                                             id="checksum"
                                             name="checksum"
                                             value={checksum}
@@ -569,7 +572,7 @@ const PublishPage = () => {
                         )}
 
                         <div className="flex justify-center">
-                            <label className="block font-bold mt-2">Service Type : </label>
+                            <label className="block  mt-2">Service Type : </label>
                             <span>
                                 <div className="form-check form-check-inline">
                                     <input
@@ -635,7 +638,7 @@ const PublishPage = () => {
                     <button
                         onClick={createNft}
                         type="submit"
-                        className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+                        className="bg-purple-500 hover:bg-purple-700 text-white  py-2 px-4 rounded"
                     >
                         Publish
                     </button>
