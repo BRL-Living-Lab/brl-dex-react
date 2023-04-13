@@ -4,7 +4,7 @@ import { AccountContext, OceanConfigContext } from "../App";
 import Web3 from "web3";
 import { ProviderInstance } from "@oceanprotocol/lib";
 import { BsDownload } from "react-icons/bs";
-import { MoonLoader } from "react-spinners";
+import { MoonLoader, PulseLoader } from "react-spinners";
 import { toast } from "react-toastify";
 
 const ComputeDetails = () => {
@@ -21,20 +21,6 @@ const ComputeDetails = () => {
     useEffect(() => {
         const getDDO = async () => {
             console.log(oceanConfig);
-            // const exampleMessage = "Example `personal_sign` message.";
-            // let signedmessage = "";
-            // try {
-            //     const from = currentAccount;
-            //     const msg = `0x${Buffer.from(exampleMessage, "utf8").toString("hex")}`;
-            //     const sign = await window.ethereum.request({
-            //         method: "personal_sign",
-            //         params: [msg, from, "Example password"],
-            //     });
-            //     console.log(sign);
-            //     signedmessage = sign;
-            // } catch (err) {
-            //     console.error(err);
-            // }
             if (currentAccount === null)
                 toast.error("Please connect wallet", {
                     position: "top-center",
@@ -63,6 +49,30 @@ const ComputeDetails = () => {
             console.log({ computeJob });
             setIsLoading(false);
         }
+    }, [computeJob]);
+
+    useEffect(() => {
+        let intervalId = null;
+        // console.log(computeJob.status);
+        if (computeJob != null && computeJob.status != 70) {
+            console.log("interval");
+            intervalId = setInterval(async () => {
+                console.log(oceanConfig);
+                Web3.utils.toChecksumAddress(currentAccount);
+                const response = await ProviderInstance.computeStatus(
+                    oceanConfig.providerUri,
+                    Web3.utils.toChecksumAddress(currentAccount),
+                    jobId
+                );
+
+                console.log({ response });
+                if (response[0].status === 70) clearInterval(intervalId);
+
+                setComputeJob(response[0]);
+            }, 5000);
+        }
+
+        return () => clearInterval(intervalId);
     }, [computeJob]);
 
     const downloadResults = async (jobId, index, filename) => {
@@ -125,18 +135,26 @@ const ComputeDetails = () => {
                         </div>
                         <div className="col-span-2">
                             <p className="text-gray-600 font-medium">Results:</p>
-                            {computeJob.results?.map((result, index) => (
-                                <div key={index} className="flex justify-start space-x-2">
-                                    <p className="text-gray-800">{result.filename}</p>
-                                    <p className="text-gray-800">({result.filesize} bytes)</p>
-                                    <button
-                                        className=""
-                                        onClick={() => downloadResults(computeJob.jobId, index, result.filename)}
-                                    >
-                                        <BsDownload className="text-lg" />
-                                    </button>
+                            {computeJob.results ? (
+                                <div>
+                                    {computeJob.results?.map((result, index) => (
+                                        <div key={index} className="flex justify-start space-x-2">
+                                            <p className="text-gray-800">{result.filename}</p>
+                                            <p className="text-gray-800">({result.filesize} bytes)</p>
+                                            <button
+                                                className=""
+                                                onClick={() =>
+                                                    downloadResults(computeJob.jobId, index, result.filename)
+                                                }
+                                            >
+                                                <BsDownload className="text-lg" />
+                                            </button>
+                                        </div>
+                                    ))}
                                 </div>
-                            ))}
+                            ) : (
+                                <PulseLoader color="#000000" size={15} />
+                            )}
                         </div>
                         {/* <div>
                             <p className="text-gray-600 font-medium">Stop Requested:</p>
