@@ -12,6 +12,8 @@ import AssetPage from "./asset/asset.page";
 import AssetEdit from "./asset/assetEdit.page";
 import CreateCompute from "./compute/create-compute.page";
 import ComputeDetails from "./compute/computeDetails.page";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 let oceanConfig = new ConfigHelper().getConfig(process.env.REACT_APP_OCEAN_NETWORK);
 oceanConfig.providerUri = "https://v4.provider.mumbai.oceanprotocol.com";
@@ -52,6 +54,7 @@ function App() {
                     </QueryClientProvider>
                 </OceanConfigContext.Provider>
             </AccountContext.Provider>
+            <ToastContainer />
         </div>
     );
 }

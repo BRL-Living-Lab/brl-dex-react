@@ -1,6 +1,7 @@
 import { useContext } from "react";
 import { AccountContext, OceanConfigContext } from "../App";
 import Web3 from "web3";
+import { toast } from "react-toastify";
 
 const Header = () => {
     const { currentAccount, setCurrentAccount } = useContext(AccountContext);
@@ -23,9 +24,26 @@ const Header = () => {
             console.log("Found addresses", accounts);
             setCurrentAccount(Web3.utils.toChecksumAddress(accounts[0]));
 
+            toast.success("Wallet connected", {
+                position: "top-center",
+                autoClose: 2000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+            });
+
             ethereum.on("accountsChanged", function (accounts) {
                 console.log("accountsChanged", accounts);
                 setCurrentAccount(Web3.utils.toChecksumAddress(accounts[0]));
+                toast.info("Wallet Address Changed", {
+                    position: "top-center",
+                    autoClose: 2000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                });
             });
 
             ethereum.on("chainChanged", function (chainId) {
