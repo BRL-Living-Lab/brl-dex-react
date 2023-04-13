@@ -196,13 +196,9 @@ const AssetPage = () => {
                                     className="block w-1/2 rounded-md border-gray-400 border-solid border-2 px-3 py-2 mt-1"
                                     type="text"
                                     name="denyAccountId"
-                                    value={
-                                        !data.credentials
-                                            ? formValues.denyAccountId !== null &&
+                                    value={formValues.denyAccountId !== null &&
                                               formValues.denyAccountId !== undefined
-                                                ? formValues.denyAccountId
-                                                : ""
-                                            : data.credentials.deny[0].values[0]
+                                                ? formValues.denyAccountId : data.credentials ? data.credentials.deny[0].values[0] : ""
                                     }
                                     onChange={handleInputChange}
                                 />
