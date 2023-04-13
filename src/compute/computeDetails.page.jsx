@@ -5,6 +5,7 @@ import Web3 from "web3";
 import { ProviderInstance } from "@oceanprotocol/lib";
 import { BsDownload } from "react-icons/bs";
 import { MoonLoader } from "react-spinners";
+import { toast } from "react-toastify";
 
 const ComputeDetails = () => {
     const { currentAccount, _ } = useContext(AccountContext);
@@ -34,6 +35,15 @@ const ComputeDetails = () => {
             // } catch (err) {
             //     console.error(err);
             // }
+            if (currentAccount === null)
+                toast.error("Please connect wallet", {
+                    position: "top-center",
+                    autoClose: false,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                });
             Web3.utils.toChecksumAddress(currentAccount);
             const response = await ProviderInstance.computeStatus(
                 oceanConfig.providerUri,

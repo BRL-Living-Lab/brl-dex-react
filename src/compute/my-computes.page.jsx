@@ -6,6 +6,7 @@ import Web3 from "web3";
 import ComputeCard from "./computeCard.component";
 import { NavLink } from "react-router-dom";
 import { MoonLoader } from "react-spinners";
+import { toast } from "react-toastify";
 
 const MyComputesPage = () => {
     const { oceanConfig } = useContext(OceanConfigContext);
@@ -33,6 +34,16 @@ const MyComputesPage = () => {
             // } catch (err) {
             //     console.error(err);
             // }
+
+            if (currentAccount === null)
+                toast.error("Please connect wallet", {
+                    position: "top-center",
+                    autoClose: false,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                });
             Web3.utils.toChecksumAddress(currentAccount);
             const response = await ProviderInstance.computeStatus(
                 oceanConfig.providerUri,
@@ -61,11 +72,13 @@ const MyComputesPage = () => {
                 </div>
             ) : (
                 <div className="p-5">
-                    {computeJobs.map((computeJob) => (
-                        <NavLink to={"/computeDetails/" + computeJob.jobId}>
-                            <ComputeCard computeJob={computeJob} key={computeJob.jobId} />
-                        </NavLink>
-                    ))}
+                    {computeJobs
+                        .sort((job1, job2) => Date(job2.created) - Date(job1.created))
+                        .map((computeJob) => (
+                            <NavLink to={"/computeDetails/" + computeJob.jobId}>
+                                <ComputeCard computeJob={computeJob} key={computeJob.jobId} />
+                            </NavLink>
+                        ))}
                 </div>
             )}
         </div>
