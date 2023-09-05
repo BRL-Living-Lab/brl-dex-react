@@ -3,12 +3,14 @@ import { useContext, useEffect, useState } from "react";
 import { AiFillCheckSquare, AiOutlineCheckSquare } from "react-icons/ai";
 import Web3 from "web3";
 import { AccountContext, OceanConfigContext } from "../App";
+import { NavLink } from "react-router-dom";
 
 const CreateCompute = () => {
     const { oceanConfig } = useContext(OceanConfigContext);
 
     const [isDatasetDDOLoading, setIsDatasetDDOLoading] = useState(true);
     const [isAlgorithmDDOLoading, setIsAlgorithmDDOLoading] = useState(true);
+    const [initiatedJobId, setInitiatedJobId] = useState(null);
 
     const [datasetService, setDatasetService] = useState(null);
     const [algorithmService, setAlgorithmService] = useState(null);
@@ -191,6 +193,7 @@ const CreateCompute = () => {
         );
 
         console.log("Current status of the compute job: ", jobStatus);
+        setInitiatedJobId(jobStatus[0].jobId);
     };
 
     return (
@@ -352,6 +355,8 @@ const CreateCompute = () => {
             ) : (
                 ""
             )}
+
+            {initiatedJobId ? <NavLink to={"/computeDetails/" + initiatedJobId}>View Details</NavLink> : ""}
         </div>
     );
 };
