@@ -245,7 +245,7 @@ const PublishPage = () => {
             }
 
             if (assetType === "algorithmRadio") {
-                ddo.metadata.algorithm.container.entryPoint = entryPoint;
+                ddo.metadata.algorithm.container.entrypoint = entryPoint;
                 ddo.metadata.algorithm.container.image = image;
                 ddo.metadata.algorithm.container.tag = tag;
                 ddo.metadata.algorithm.container.checksum = checksum;
