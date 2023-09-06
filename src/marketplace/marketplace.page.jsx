@@ -45,7 +45,9 @@ const MarketplacePage = () => {
             },
         },
         sort: {
-            "nft.created": "desc",
+            "metadata.created": {
+                "order": "desc"
+              }
         },
     };
 

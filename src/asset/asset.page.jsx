@@ -183,12 +183,12 @@ const AssetPage = () => {
                                     Modify Asset
                                 </button>
                             </div>
-                        </div>
-                        <div className="flex items-center mb-2">
-                            <label className="w-32 font-semibold">DID:</label>
-                            <div className="text-gray-600">{ddo.id}</div>
-                        </div>
-                        <div className="flex items-center mb-2">
+                            </div>
+                            <div className="flex items-center mb-2">
+                                <label className="w-32 font-semibold">DID:</label>
+                                <div className="text-gray-600" title={ddo.id}>......{ddo.id.slice(-6)}</div>
+                            </div>
+                            <div className="flex items-center mb-2">
                             <label className="w-32  font-semibold">NFT Address:</label>
                             <div className="text-gray-600">{ddo.nftAddress}</div>
                         </div>
@@ -197,11 +197,11 @@ const AssetPage = () => {
                             <ul className="list-disc ml-6">
                                 <li className="flex items-center">
                                     <label className="w-32 font-semibold ">Created:</label>
-                                    <div className="text-gray-600">{ddo.metadata.created}</div>
+                                    <div className="text-gray-600">{new Date(ddo.metadata.created).toLocaleString()}</div>
                                 </li>
                                 <li className="flex items-center">
                                     <label className="w-32 font-semibold ">Updated:</label>
-                                    <div className="text-gray-600">{ddo.metadata.updated}</div>
+                                    <div className="text-gray-600">{new Date(ddo.metadata.updated).toLocaleString()}</div>
                                 </li>
                                 <li className="flex items-center">
                                     <label className="w-32 font-semibold ">Type:</label>
@@ -288,25 +288,27 @@ const AssetPage = () => {
                                 <p id="state" className="text-gray-700">
                                     {ddo.nft.state}
                                 </p>
-                            </div>
-                            <div className="col-span-2 sm:col-span-1">
-                                <label className="block text-gray-700  mb-2 font-semibold">Token URI:</label>
-                                <p id="tokenURI" className="text-gray-700">
-                                    {ddo.nft.tokenURI}
-                                </p>
-                            </div>
+                                </div>
+                                <div className="col-span-2 sm:col-span-1">
+                                    <label className="block text-gray-700  mb-2 font-semibold">Token URI:</label>
+                                    <p id="tokenURI" className="text-gray-700">
+                                        <a href={ddo.nft.tokenURI} target="_blank" rel="noopener noreferrer" className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                                            Click here for the link
+                                        </a>
+                                    </p>
+                                </div>
                             <div className="col-span-2 sm:col-span-1">
                                 <label className="block text-gray-700  mb-2 font-semibold">Owner:</label>
                                 <p id="owner" className="text-gray-700">
                                     {ddo.nft.owner}
                                 </p>
-                            </div>
-                            <div className="col-span-2 sm:col-span-1">
-                                <label className="block text-gray-700  mb-2 font-semibold">Created:</label>
-                                <p id="created" className="text-gray-700">
-                                    {ddo.nft.created}
-                                </p>
-                            </div>
+                                </div>
+                                <div className="col-span-2 sm:col-span-1">
+                                    <label className="block text-gray-700  mb-2 font-semibold">Created:</label>
+                                    <p id="created" className="text-gray-700">
+                                        {new Date(ddo.nft.created).toLocaleString()}
+                                    </p>
+                                </div>
                         </div>
                     </div>
                     <br />

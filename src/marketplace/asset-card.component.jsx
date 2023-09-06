@@ -29,11 +29,7 @@ const AssetCard = ({ did }) => {
             <div className="flex justify-between p-2">
                 <div className="space-x-2 text-sm">
                     <div>
-                        {new Date(did.metadata.created).getMonth() +
-                            "/" +
-                            new Date(did.metadata.created).getDate() +
-                            "/" +
-                            new Date(did.metadata.created).getFullYear()}
+                        {new Date(did.metadata.created).toLocaleString()}
                     </div>{" "}
                 </div>
                 <div className="flex space-x-1 text-sm">
