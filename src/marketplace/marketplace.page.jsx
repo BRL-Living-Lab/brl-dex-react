@@ -13,6 +13,8 @@ const MarketplacePage = () => {
     const [usePrevButton, setUsePrevButton] = useState(false);
     const [pageFrom, setPageFrom] = useState(0);
     const { oceanConfig } = useContext(OceanConfigContext);
+    const [searchQuery, setSearchQuery] = useState('');
+    const [filterType, setFilterType] = useState('');
 
     const endpoint = "https://v4.aquarius.oceanprotocol.com/api/aquarius/assets/query";
     const post_body = {
@@ -54,10 +56,30 @@ const MarketplacePage = () => {
     const getDids = async (from) => {
         console.log(oceanConfig);
         post_body.query.bool.filter[1].terms.chainId = [oceanConfig.chainId];
+
+        // check if there is a search query
+        if (searchQuery) {
+            post_body.query.bool.filter.push({
+                query_string: {
+                    default_field: "metadata.name",
+                    query: `"${searchQuery}"`,
+                },
+            });
+        }
+
+        // check if there is a filter type
+        if (filterType) {
+            post_body.query.bool.filter.push({
+                term: {
+                    "metadata.type": filterType,
+                },
+            });
+        }
+        console.log(filterType);
         const response = await axios.post(endpoint, { ...post_body, from });
 
         setDids(response.data.hits.hits.map((data) => data._source));
-    };
+    };   
 
     useEffect(() => {
         try {
@@ -73,6 +95,23 @@ const MarketplacePage = () => {
             setIsLoading(false);
         }
     }, [dids]);
+    // update search query when user types
+    useEffect(() => {
+    try {
+        getDids();
+    } catch (error) {
+        setError(error);
+    }
+    }, [searchQuery]);
+
+    // update filter type when user selects
+    useEffect(() => {
+        try {
+            getDids();
+        } catch (error) {
+            setError(error);
+        }
+        }, [filterType]);
 
     const nextButtonClick = (pageFrom) => {
         setIsLoading(true);
@@ -97,6 +136,20 @@ const MarketplacePage = () => {
             ) : (
                 // </div>
                 <div>
+                    <input
+                        type="text"
+                        className="w-full border p-2 m-2"
+                        placeholder="Search for assets..."
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                    />
+                    <select value={filterType} onChange={(e) => setFilterType(e.target.value)}>
+                        <option value="">Assest Type</option>
+                        <option value="algorithm">algorithm</option>
+                        <option value="dataset">dataset</option>
+                        {/* Add more options for each asset type */}
+                    </select>
+
                     <div className="grid grid-cols-3 gap-x-4">
                         {dids.map((did) => (
                             <NavLink to={"/asset/" + did.id}>
