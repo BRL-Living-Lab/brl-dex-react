@@ -1,9 +1,10 @@
 import axios from "axios";
 import { useContext, useEffect, useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
-import { OceanConfigContext } from "../App";
+import { AccountContext, OceanConfigContext } from "../App";
 import AssetCard from "./asset-card.component";
 import { MoonLoader } from "react-spinners";
+
 
 const MarketplacePage = () => {
     const [dids, setDids] = useState(null);
@@ -15,6 +16,8 @@ const MarketplacePage = () => {
     const { oceanConfig } = useContext(OceanConfigContext);
     const [searchQuery, setSearchQuery] = useState('');
     const [filterType, setFilterType] = useState('');
+    const [showUserAssets, setShowUserAssets] = useState(false);
+    const { currentAccount, setCurrentAccount } = useContext(AccountContext);
 
     const endpoint = "https://v4.aquarius.oceanprotocol.com/api/aquarius/assets/query";
     const post_body = {
@@ -95,23 +98,14 @@ const MarketplacePage = () => {
             setIsLoading(false);
         }
     }, [dids]);
-    // update search query when user types
+    // update search query and filter from user input
     useEffect(() => {
     try {
         getDids();
     } catch (error) {
         setError(error);
     }
-    }, [searchQuery]);
-
-    // update filter type when user selects
-    useEffect(() => {
-        try {
-            getDids();
-        } catch (error) {
-            setError(error);
-        }
-        }, [filterType]);
+    }, [searchQuery, filterType]);
 
     const nextButtonClick = (pageFrom) => {
         setIsLoading(true);
@@ -127,6 +121,14 @@ const MarketplacePage = () => {
         if (pageFrom <= 0) setUsePrevButton(false);
     };
 
+    const handleShowUserAssetsChange = () => {
+        setShowUserAssets(!showUserAssets);
+    };
+
+    const filteredDids = showUserAssets
+        ? dids.filter((did) => did.nft.owner === currentAccount )
+        : dids;
+
     return (
         <div>
             {isLoading ? (
@@ -136,22 +138,41 @@ const MarketplacePage = () => {
             ) : (
                 // </div>
                 <div>
-                    <input
-                        type="text"
-                        className="w-full border p-2 m-2"
-                        placeholder="Search for assets..."
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                    />
-                    <select value={filterType} onChange={(e) => setFilterType(e.target.value)}>
-                        <option value="">Assest Type</option>
-                        <option value="algorithm">algorithm</option>
-                        <option value="dataset">dataset</option>
-                        {/* Add more options for each asset type */}
-                    </select>
+                    <div className="grid grid-cols-3 gap-x-4">
+                        <input
+                            type="text"
+                            className="border p-2 m-2 rounded-md col-span-2 row-span-2"
+                            placeholder="Search for assets..."s
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                        />
+                        <div
+                            className="row-span-2"
+                            >
+                            <select 
+                                value={filterType} 
+                                onChange={(e) => setFilterType(e.target.value)}
+                                className="border p-2 m-2 rounded-md"
+                            >
+                                <option value="">Assest Type</option>
+                                <option value="algorithm">algorithm</option>
+                                <option value="dataset">dataset</option>
+                            </select>
+                        </div>
+
+                        <label>
+                                <input
+                                type="checkbox"
+                                checked={showUserAssets}
+                                onChange={handleShowUserAssetsChange}
+                            />
+                                Show My Assets
+                            </label>
+
+                    </div>
 
                     <div className="grid grid-cols-3 gap-x-4">
-                        {dids.map((did) => (
+                        {filteredDids.map((did) => (
                             <NavLink to={"/asset/" + did.id}>
                                 <AssetCard key={did.id} did={did} />
                             </NavLink>
