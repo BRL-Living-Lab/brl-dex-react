@@ -146,9 +146,15 @@ const MarketplacePage = () => {
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
                         />
-                        <div
-                            className="row-span-2"
-                            >
+                        <div className="flex items-center">
+                            <label>
+                                <input
+                                type="checkbox"
+                                checked={showUserAssets}
+                                onChange={handleShowUserAssetsChange}
+                            />
+                                <span className="ml-2">Show My Assets</span>
+                            </label>
                             <select 
                                 value={filterType} 
                                 onChange={(e) => setFilterType(e.target.value)}
@@ -160,14 +166,7 @@ const MarketplacePage = () => {
                             </select>
                         </div>
 
-                        <label>
-                                <input
-                                type="checkbox"
-                                checked={showUserAssets}
-                                onChange={handleShowUserAssetsChange}
-                            />
-                                Show My Assets
-                            </label>
+                    
 
                     </div>
 
