@@ -1,12 +1,16 @@
 import { Aquarius, Datatoken, Nft, NftFactory, ProviderInstance, ZERO_ADDRESS, generateDid } from "@oceanprotocol/lib";
-import { useContext, useState } from "react";
+import { useContext, useState, useEffect } from "react";
 import { AccountContext, OceanConfigContext } from "../App";
+import { useLocation } from 'react-router-dom';
 import Web3 from "web3";
 import { toast } from "react-toastify";
 
 const PublishPage = () => {
     const { oceanConfig } = useContext(OceanConfigContext);
     const { currentAccount, _ } = useContext(AccountContext);
+    let location = useLocation();
+
+    console.log({location})
 
     const [formData, setFormData] = useState({
         name: "",
@@ -18,7 +22,9 @@ const PublishPage = () => {
         providerURL: "https://v4.provider.mumbai.oceanprotocol.com/",
         sampleFileURL: "",
         assetType: "",
+        isLinkedToRequest: false,
         timeout: 0,
+        dataRequestID: null,
         serviceType: "",
         serviceName: "",
         entryPoint: "node $ALGO",
@@ -26,6 +32,16 @@ const PublishPage = () => {
         tag: "alpine:3.16",
         checksum: "sha256:d7c1c5566f2eb09a6f16044174f285f3e0d0073a58bfd2f188c71a6decb5fc15",
     });
+
+    useEffect(() => {
+        if (location.state) {
+            setFormData(prevState => ({
+                ...prevState,
+                dataRequestID: location.state.dataRequestId,
+                isLinkedToRequest: location.state? location.state.isLinkedToRequestAsset: undefined,
+            }));
+        }
+    }, []);
 
     const {
         name,
@@ -38,6 +54,8 @@ const PublishPage = () => {
         sampleFileURL,
         denyAccnts,
         assetType,
+        dataRequestID,
+        isLinkedToRequest,
         timeout,
         serviceType,
         serviceName,
@@ -343,7 +361,37 @@ const PublishPage = () => {
         toast.dismiss(createAssetToast);
 
         console.log(`asset id: ${assetId}`);
+
+        if (isLinkedToRequest === "true" && dataRequestID !== null && assetId !== null) {
+
+            linkWithAssetRequest(assetId, dataRequestID);
+            
+        }
     };
+
+    const linkWithAssetRequest = async (assetId, dataRequestID) => {
+        const response = await fetch(`http://localhost:3000/api/dataRequests/${dataRequestID}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ "assetAddress": [assetId] }),
+        });
+    
+        if (!response.ok) {
+            console.error(`API request failed: ${response.status}`);
+            return;
+        }
+        toast.success("Asset linked with Request successfully", {
+            position: "top-center",
+            autoClose: 3000,
+            hideProgressBar: false,
+            closeOnClick: true,
+        });
+        const dataRequest = await response.json();
+        console.log(`Linked asset ${assetId} with Asset Request ID ${dataRequestID}`);
+        console.log(dataRequest);
+    }
 
     const setPublishDetails = (e) => {
         setFormData((prevState) => ({
@@ -515,6 +563,32 @@ const PublishPage = () => {
                                 </div>
                             </div>
                         </div>
+
+                        {/* Asset Type radio buttons */}
+                        <div className="flex justify-center">
+                            <label>Linked to Data Request? : </label>
+                            <div>
+                                <input type="radio" value="true" onChange={setPublishDetails} name="isLinkedToRequest" checked={isLinkedToRequest === "true" ? true: false} /> Yes
+                                <input type="radio" value="false" onChange={setPublishDetails} name="isLinkedToRequest" checked={isLinkedToRequest === "false" || !isLinkedToRequest? true: false}/> No
+                            </div>
+                        </div>
+                        {isLinkedToRequest === "true" && (
+                            <div className="flex justify-center">
+                                <div className="mb-3 xl:w-96">
+                                    <label className="block  mb-1">Data Request ID</label>
+                                    <input
+                                        onChange={setPublishDetails}
+                                        type="text"
+                                        value={dataRequestID}
+                                        className="mb-1 block w-full rounded-md border-gray-400 border-solid border-2 px-3 py-2 mt-1 bg-gray-50"
+                                        id="dataRequestID"
+                                        name="dataRequestID"
+                                    />
+                                   
+                                </div>
+                            </div>
+                        )}
+
 
                         {/* service details */}
                         <div className="flex justify-center">
