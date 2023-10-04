@@ -7,7 +7,7 @@ const DataRequestsPage = ({ dataRequests }) => {
     const history = useNavigate();
 
     useEffect(() => {
-        fetch('http://localhost:3000/api/dataRequests')
+        fetch(`http://localhost:${process.env.REACT_APP_SERVER_PORT}/api/dataRequests`)
             .then(response => {
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);

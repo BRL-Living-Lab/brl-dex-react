@@ -10,6 +10,8 @@ const PublishPage = () => {
     const { currentAccount, _ } = useContext(AccountContext);
     let location = useLocation();
 
+    console.log({location})
+
     const [formData, setFormData] = useState({
         name: "",
         symbol: "",
@@ -36,7 +38,7 @@ const PublishPage = () => {
             setFormData(prevState => ({
                 ...prevState,
                 dataRequestID: location.state.dataRequestId,
-                isLinkedToRequest: location.state.isLinkedToRequestAsset
+                isLinkedToRequest: location.state? location.state.isLinkedToRequestAsset: undefined,
             }));
         }
     }, []);
@@ -566,8 +568,8 @@ const PublishPage = () => {
                         <div className="flex justify-center">
                             <label>Linked to Data Request? : </label>
                             <div>
-                                <input type="radio" value="true" onChange={setPublishDetails} name="isLinkedToRequest" /> Yes
-                                <input type="radio" value="false" onChange={setPublishDetails} name="isLinkedToRequest" /> No
+                                <input type="radio" value="true" onChange={setPublishDetails} name="isLinkedToRequest" checked={isLinkedToRequest === "true" ? true: false} /> Yes
+                                <input type="radio" value="false" onChange={setPublishDetails} name="isLinkedToRequest" checked={isLinkedToRequest === "false" || !isLinkedToRequest? true: false}/> No
                             </div>
                         </div>
                         {isLinkedToRequest === "true" && (

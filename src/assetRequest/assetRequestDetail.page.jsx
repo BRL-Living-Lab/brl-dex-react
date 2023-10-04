@@ -8,7 +8,7 @@ const AssetRequestDetailPage = () => {
     const { id } = useParams();
 
     useEffect(() => {
-        fetch(`http://localhost:3000/api/dataRequests/${id}`)
+        fetch(`http://localhost:${process.env.REACT_APP_SERVER_PORT}/api/dataRequests/${id}`)
             .then(response => response.json())
             .then(data => setDataRequest(data))
             .catch(error => console.error(error));
