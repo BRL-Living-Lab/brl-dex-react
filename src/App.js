@@ -9,6 +9,9 @@ import { createContext, useState } from "react";
 import { QueryClient, QueryClientProvider } from "react-query";
 import { ConfigHelper } from "@oceanprotocol/lib";
 import AssetPage from "./asset/asset.page";
+import DataAssetRequestForm from "./assetRequest/assetRequest.page";
+import AssetRequestDetailPage from "./assetRequest/assetRequestDetail.page";
+import DataRequestsPage from "./assetRequest/assetRequestList.page";
 import AssetEdit from "./asset/assetEdit.page";
 import CreateCompute from "./compute/create-compute.page";
 import ComputeDetails from "./compute/computeDetails.page";
@@ -44,6 +47,9 @@ function App() {
                                 <Routes>
                                     <Route path="/" exact element={<MarketplacePage />}></Route>
                                     <Route path="publish" element={<PublishPage />}></Route>
+                                    <Route path="request" element={<DataAssetRequestForm />}></Route>
+                                    <Route path="datarequests" element={<DataRequestsPage />}></Route>
+                                    <Route path="assetRequestDetail/:id" element={<AssetRequestDetailPage />}></Route>
                                     <Route path="computeStatus" element={<MyComputesPage />}></Route>
                                     <Route path="createCompute" element={<CreateCompute />}></Route>
                                     <Route path="asset/:id" element={<AssetPage />}></Route>
