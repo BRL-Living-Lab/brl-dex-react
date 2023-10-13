@@ -6,6 +6,7 @@ const Sidebar = () => {
         <div className="flex flex-col justify-start text-left h-full bg-white shadow-lg rounded-lg items-center pt-5">
             <SidebarItem to="/" text="Marketplace" />
             <SidebarItem to="publish" text="Publish Assets" />
+            <SidebarItem to="userassets" text="User Assets" />
             <SidebarItem to="request" text="Request Asset Form" />
             <SidebarItem to="dataRequests" text="Request Assets" />
             <SidebarItem to="createCompute" text="New Compute Job" />

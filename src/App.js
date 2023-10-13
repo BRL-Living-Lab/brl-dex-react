@@ -17,6 +17,7 @@ import CreateCompute from "./compute/create-compute.page";
 import ComputeDetails from "./compute/computeDetails.page";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import UserAssetsPage from "./userassets/userassets.page";
 
 let oceanConfig = new ConfigHelper().getConfig(process.env.REACT_APP_OCEAN_NETWORK);
 oceanConfig.providerUri = "https://v4.provider.mumbai.oceanprotocol.com";
@@ -54,6 +55,7 @@ function App() {
                                     <Route path="asset/:id" element={<AssetPage />}></Route>
                                     <Route path="assetEdit/:id" element={<AssetEdit />}></Route>
                                     <Route path="computeDetails/:jobId" element={<ComputeDetails />}></Route>
+                                    <Route path="userassets" element={<UserAssetsPage />}></Route>
                                 </Routes>
                             </div>
                         </div>
