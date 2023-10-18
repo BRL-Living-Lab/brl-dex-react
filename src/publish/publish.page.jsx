@@ -1,16 +1,29 @@
-import { Aquarius, Datatoken, Nft, NftFactory, ProviderInstance, ZERO_ADDRESS, generateDid } from "@oceanprotocol/lib";
+import {
+    Aquarius,
+    Datatoken,
+    Nft,
+    NftFactory,
+    ProviderInstance,
+    ZERO_ADDRESS,
+    generateDid,
+} from "@oceanprotocol/lib";
 import { useContext, useState, useEffect } from "react";
-import { AccountContext, OceanConfigContext } from "../App";
-import { useLocation } from 'react-router-dom';
+import { AccountContext, AutomationContext, OceanConfigContext } from "../App";
+import { useLocation } from "react-router-dom";
 import Web3 from "web3";
 import { toast } from "react-toastify";
+// import ERC721Factory from "@oceanprotocol/contracts/artifacts/contracts/ERC721Factory.sol/ERC721Factory.json";
+// import BigNumber from "bignumber.js";
+// import { FEE_HISTORY_NOT_SUPPORTED, generateDtName } from "@oceanprotocol/lib";
 
 const PublishPage = () => {
     const { oceanConfig } = useContext(OceanConfigContext);
     const { currentAccount, _ } = useContext(AccountContext);
+    const { usingAutomation, setUsingAutomation } =
+        useContext(AutomationContext);
     let location = useLocation();
 
-    console.log({location})
+    console.log({ location });
 
     const [formData, setFormData] = useState({
         name: "",
@@ -30,18 +43,25 @@ const PublishPage = () => {
         entryPoint: "node $ALGO",
         image: "node",
         tag: "alpine:3.16",
-        checksum: "sha256:d7c1c5566f2eb09a6f16044174f285f3e0d0073a58bfd2f188c71a6decb5fc15",
+        checksum:
+            "sha256:d7c1c5566f2eb09a6f16044174f285f3e0d0073a58bfd2f188c71a6decb5fc15",
     });
 
     useEffect(() => {
         if (location.state) {
-            setFormData(prevState => ({
+            setFormData((prevState) => ({
                 ...prevState,
                 dataRequestID: location.state.dataRequestId,
-                isLinkedToRequest: location.state? location.state.isLinkedToRequestAsset: undefined,
+                isLinkedToRequest: location.state
+                    ? location.state.isLinkedToRequestAsset
+                    : undefined,
             }));
         }
     }, []);
+
+    const MIN_GAS_FEE_POLYGON = 30000000000; // minimum recommended 30 gwei polygon main and mumbai fees
+    const POLYGON_NETWORK_ID = 137;
+    const MUMBAI_NETWORK_ID = 80001;
 
     const {
         name,
@@ -105,7 +125,8 @@ const PublishPage = () => {
                 name: "", //service friendly name
                 description: "", //service description
                 datatokenAddress: "0xa15024b732A8f2146423D14209eFd074e61964F3",
-                serviceEndpoint: "https://v4.provider.mumbai.oceanprotocol.com/", // Provider URL (schema + host)
+                serviceEndpoint:
+                    "https://v4.provider.mumbai.oceanprotocol.com/", // Provider URL (schema + host)
                 timeout: 3000,
                 compute: {
                     // for compute assets only
@@ -152,7 +173,8 @@ const PublishPage = () => {
                     entrypoint: "node $ALGO",
                     image: "node",
                     tag: "alpine:3.16",
-                    checksum: "sha256:d7c1c5566f2eb09a6f16044174f285f3e0d0073a58bfd2f188c71a6decb5fc15",
+                    checksum:
+                        "sha256:d7c1c5566f2eb09a6f16044174f285f3e0d0073a58bfd2f188c71a6decb5fc15",
                 },
             },
         },
@@ -162,17 +184,38 @@ const PublishPage = () => {
                 type: "access",
                 files: "",
                 datatokenAddress: "0xa15024b732A8f2146423D14209eFd074e61964F3",
-                serviceEndpoint: "https://v4.provider.mumbai.oceanprotocol.com/",
+                serviceEndpoint:
+                    "https://v4.provider.mumbai.oceanprotocol.com/",
                 timeout: 3000,
             },
         ],
     };
 
-    const createAsset = async (name, symbol, owner, assetUrl, ddo, providerUrl, sampleFileURL) => {
+    const createAsset = async (
+        name,
+        symbol,
+        owner,
+        assetUrl,
+        ddo,
+        providerUrl,
+        sampleFileURL
+    ) => {
         console.log(owner);
+
+        let web3;
+        if (!usingAutomation && window.ethereum) {
+            web3 = new Web3(window.ethereum);
+        } else {
+            web3 = new Web3(
+                new Web3.providers.HttpProvider(
+                    process.env.REACT_APP_ALCHEMY_KEY
+                )
+            );
+            console.log(web3);
+            web3.eth.accounts.wallet.add(localStorage.getItem("privateKey"));
+        }
         if (window.ethereum) {
             const aquarius = new Aquarius(oceanConfig.metadataCacheUri);
-            const web3 = new Web3(window.ethereum);
             const nft = new Nft(web3);
             const Factory = new NftFactory(oceanConfig.nftFactoryAddress, web3);
             const datatoken = new Datatoken(web3);
@@ -207,7 +250,11 @@ const PublishPage = () => {
             ddo.metadata.updated = currentDate;
             console.log("here");
 
-            const result = await Factory.createNftWithDatatoken(owner, nftParamsAsset, datatokenParams);
+            const result = await Factory.createNftWithDatatoken(
+                owner,
+                nftParamsAsset,
+                datatokenParams
+            );
             console.log({ result });
             toast.success("NFT Deployed with Datatoken", {
                 position: "bottom-right",
@@ -219,7 +266,8 @@ const PublishPage = () => {
             });
 
             const nftAddress = result.events.NFTCreated.returnValues[0];
-            const datatokenAddressAsset = result.events.TokenCreated.returnValues[0];
+            const datatokenAddressAsset =
+                result.events.TokenCreated.returnValues[0];
 
             // // Define metadata as per data set type
             // if (assetType === "algorithmRadio") {
@@ -248,7 +296,11 @@ const PublishPage = () => {
 
             assetUrl.datatokenAddress = datatokenAddressAsset;
             assetUrl.nftAddress = ddo.nftAddress;
-            let providerResponse = await ProviderInstance.encrypt(assetUrl, chain, providerUrl);
+            let providerResponse = await ProviderInstance.encrypt(
+                assetUrl,
+                chain,
+                providerUrl
+            );
 
             // define ddo service
 
@@ -269,7 +321,8 @@ const PublishPage = () => {
                 ddo.metadata.algorithm.container.checksum = checksum;
             }
 
-            ddo.services[0].type = serviceType === "computeRadio" ? "compute" : "access";
+            ddo.services[0].type =
+                serviceType === "computeRadio" ? "compute" : "access";
             ddo.services[0].files = await providerResponse;
             ddo.services[0].name = serviceName;
             ddo.services[0].datatokenAddress = datatokenAddressAsset;
@@ -278,7 +331,11 @@ const PublishPage = () => {
 
             ddo.nftAddress = web3.utils.toChecksumAddress(nftAddress);
             ddo.id = generateDid(nftAddress, chain);
-            providerResponse = await ProviderInstance.encrypt(ddo, chain, providerUrl);
+            providerResponse = await ProviderInstance.encrypt(
+                ddo,
+                chain,
+                providerUrl
+            );
             const encryptedResponse = await providerResponse;
             const validateResult = await aquarius.validate(ddo);
 
@@ -329,12 +386,15 @@ const PublishPage = () => {
 
         let assetId;
 
-        const createAssetToast = toast.info("Sign Transaction on wallet when prompted", {
-            position: "top-center",
-            autoClose: false,
-            hideProgressBar: false,
-            closeOnClick: true,
-        });
+        const createAssetToast = toast.info(
+            "Sign Transaction on wallet when prompted",
+            {
+                position: "top-center",
+                autoClose: false,
+                hideProgressBar: false,
+                closeOnClick: true,
+            }
+        );
 
         if (assetType === "algorithmRadio") {
             ALGORITHM_ASSET_URL.files[0].url = fileUrl;
@@ -362,22 +422,27 @@ const PublishPage = () => {
 
         console.log(`asset id: ${assetId}`);
 
-        if (isLinkedToRequest === "true" && dataRequestID !== null && assetId !== null) {
-
+        if (
+            isLinkedToRequest === "true" &&
+            dataRequestID !== null &&
+            assetId !== null
+        ) {
             linkWithAssetRequest(assetId, dataRequestID);
-            
         }
     };
 
     const linkWithAssetRequest = async (assetId, dataRequestID) => {
-        const response = await fetch(`http://localhost:3000/api/dataRequests/${dataRequestID}`, {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ "assetAddress": [assetId] }),
-        });
-    
+        const response = await fetch(
+            `http://localhost:3000/api/dataRequests/${dataRequestID}`,
+            {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ assetAddress: [assetId] }),
+            }
+        );
+
         if (!response.ok) {
             console.error(`API request failed: ${response.status}`);
             return;
@@ -389,9 +454,11 @@ const PublishPage = () => {
             closeOnClick: true,
         });
         const dataRequest = await response.json();
-        console.log(`Linked asset ${assetId} with Asset Request ID ${dataRequestID}`);
+        console.log(
+            `Linked asset ${assetId} with Asset Request ID ${dataRequestID}`
+        );
         console.log(dataRequest);
-    }
+    };
 
     const setPublishDetails = (e) => {
         setFormData((prevState) => ({
@@ -400,10 +467,178 @@ const PublishPage = () => {
         }));
     };
 
+    // const signTransaction = async () => {
+    //     const web3 = new Web3(window.ethereum);
+
+    //     const address = currentAccount;
+
+    //     const tokenName = generateDtName();
+
+    //     console.log(Web3.utils.toChecksumAddress(currentAccount));
+    //     console.log(currentAccount);
+
+    //     const nftParamsAsset = {
+    //         name: "KASH", //Name of NFT set in contract
+    //         symbol: "KASH", //Symbol of NFT set in contract
+    //         templateIndex: 1,
+    //         tokenURI: "",
+    //         state: 0,
+    //         created: new Date().toISOString(),
+    //         transferable: true,
+    //         owner: currentAccount,
+    //     };
+    //     const datatokenParams = {
+    //         templateIndex: 1,
+    //         cap: "100000",
+    //         feeAmount: "0",
+    //         paymentCollector: ZERO_ADDRESS,
+    //         feeToken: ZERO_ADDRESS,
+    //         minter: currentAccount,
+    //         mpFeeAddress: ZERO_ADDRESS,
+    //         name: tokenName.name,
+    //         symbol: tokenName.symbol,
+    //     };
+
+    //     const dataTokenParamsUpdated = {
+    //         templateIndex: datatokenParams.templateIndex,
+    //         strings: [datatokenParams.name, datatokenParams.symbol],
+    //         addresses: [
+    //             datatokenParams.minter,
+    //             datatokenParams.paymentCollector,
+    //             datatokenParams.mpFeeAddress,
+    //             datatokenParams.feeToken,
+    //         ],
+    //         uints: [
+    //             Web3.utils.toWei(datatokenParams.cap),
+    //             Web3.utils.toWei(datatokenParams.feeAmount),
+    //         ],
+    //         bytess: [],
+    //     };
+
+    //     console.log(oceanConfig);
+    //     const contract = new web3.eth.Contract(
+    //         ERC721Factory.abi,
+    //         oceanConfig.nftFactoryAddress
+    //     );
+    //     console.log(contract);
+
+    //     const estimatedGas = await contract.methods.createNftWithErc20
+    //         .apply(null, [nftParamsAsset, dataTokenParamsUpdated])
+    //         .estimateGas({ currentAccount }, (err, estGas) =>
+    //             err ? 1000000 : estGas
+    //         );
+
+    //     console.log(estimatedGas);
+
+    //     const trxReceipt = await sendTx(
+    //         currentAccount,
+    //         estimatedGas + 1,
+    //         web3,
+    //         oceanConfig.gasFeeMultiplier,
+    //         contract.methods.createNftWithErc20,
+    //         nftParamsAsset,
+    //         dataTokenParamsUpdated
+    //     );
+
+    //     console.log(trxReceipt);
+    // };
+
+    // const getFairGasPrice = async (web3, gasFeeMultiplier) => {
+    //     const x = new BigNumber(await web3.eth.getGasPrice());
+    //     if (gasFeeMultiplier)
+    //         return x
+    //             .multipliedBy(gasFeeMultiplier)
+    //             .integerValue(BigNumber.ROUND_DOWN)
+    //             .toString(10);
+    //     else return x.toString(10);
+    // };
+
+    // const sendTx = async (
+    //     from,
+    //     estGas,
+    //     web3,
+    //     gasFeeMultiplier,
+    //     functionToSend,
+    //     ...args
+    // ) => {
+    //     const sendTxValue = {
+    //         from,
+    //         gas: estGas + 1,
+    //     };
+    //     const networkId = await web3.eth.getChainId();
+    //     try {
+    //         const feeHistory = await web3.eth.getFeeHistory(1, "latest", [75]);
+    //         if (
+    //             feeHistory &&
+    //             feeHistory?.baseFeePerGas?.[0] &&
+    //             feeHistory?.reward?.[0]?.[0]
+    //         ) {
+    //             let aggressiveFee = new BigNumber(feeHistory?.reward?.[0]?.[0]);
+    //             if (gasFeeMultiplier > 1) {
+    //                 aggressiveFee =
+    //                     aggressiveFee.multipliedBy(gasFeeMultiplier);
+    //             }
+
+    //             sendTxValue.maxPriorityFeePerGas = aggressiveFee
+    //                 .integerValue(BigNumber.ROUND_DOWN)
+    //                 .toString(10);
+
+    //             sendTxValue.maxFeePerGas = aggressiveFee
+    //                 .plus(
+    //                     new BigNumber(
+    //                         feeHistory?.baseFeePerGas?.[0]
+    //                     ).multipliedBy(2)
+    //                 )
+    //                 .integerValue(BigNumber.ROUND_DOWN)
+    //                 .toString(10);
+
+    //             // if network is polygon and mumbai and fees is lower than the 30 gwei trashold, sets MIN_GAS_FEE_POLYGON
+    //             sendTxValue.maxPriorityFeePerGas =
+    //                 (networkId === MUMBAI_NETWORK_ID ||
+    //                     networkId === POLYGON_NETWORK_ID) &&
+    //                 new BigNumber(sendTxValue.maxPriorityFeePerGas).lte(
+    //                     new BigNumber(MIN_GAS_FEE_POLYGON)
+    //                 )
+    //                     ? new BigNumber(MIN_GAS_FEE_POLYGON)
+    //                           .integerValue(BigNumber.ROUND_DOWN)
+    //                           .toString(10)
+    //                     : sendTxValue.maxPriorityFeePerGas;
+
+    //             sendTxValue.maxFeePerGas =
+    //                 (networkId === MUMBAI_NETWORK_ID ||
+    //                     networkId === POLYGON_NETWORK_ID) &&
+    //                 new BigNumber(sendTxValue.maxFeePerGas).lte(
+    //                     new BigNumber(MIN_GAS_FEE_POLYGON)
+    //                 )
+    //                     ? new BigNumber(MIN_GAS_FEE_POLYGON)
+    //                           .integerValue(BigNumber.ROUND_DOWN)
+    //                           .toString(10)
+    //                     : sendTxValue.maxFeePerGas;
+    //         } else {
+    //             sendTxValue.gasPrice = await getFairGasPrice(
+    //                 web3,
+    //                 gasFeeMultiplier
+    //             );
+    //         }
+    //     } catch (err) {
+    //         sendTxValue.gasPrice = await getFairGasPrice(
+    //             web3,
+    //             gasFeeMultiplier
+    //         );
+    //     }
+
+    //     const trxReceipt = await functionToSend
+    //         .apply(null, args)
+    //         .send(sendTxValue);
+    //     return trxReceipt;
+    // };
+
     return (
         <div className="bg-white rounded-md h-full overflow-y-scroll">
             {" "}
-            <h1 className="font-light text-xl p-5 text-center">Publish Asset </h1>
+            <h1 className="font-light text-xl p-5 text-center">
+                Publish Asset{" "}
+            </h1>
             <form className=" flex flex-col w-full">
                 <div className="grid grid-cols-2 gap-1">
                     {/* Column 1 */}
@@ -411,7 +646,9 @@ const PublishPage = () => {
                         {/* Data Asset details */}
                         <div className="flex justify-center">
                             <div className="mb-3 xl:w-96">
-                                <label className="block  mb-1">Data Asset Name</label>
+                                <label className="block  mb-1">
+                                    Data Asset Name
+                                </label>
 
                                 <input
                                     value={name}
@@ -461,7 +698,9 @@ const PublishPage = () => {
                         {/* NFT symbol */}
                         <div className="flex justify-center">
                             <div className="mb-3 xl:w-96">
-                                <label className="block  mb-1">NFT Symbol Name</label>
+                                <label className="block  mb-1">
+                                    NFT Symbol Name
+                                </label>
                                 <input
                                     value={symbol}
                                     onChange={setPublishDetails}
@@ -476,7 +715,9 @@ const PublishPage = () => {
                         {/* Data Asset URL */}
                         <div className="flex justify-center">
                             <div className="mb-3 xl:w-96">
-                                <label className="block  mb-1">Data Asset URL</label>
+                                <label className="block  mb-1">
+                                    Data Asset URL
+                                </label>
                                 {/* <div>
                                 https://raw.githubusercontent.com/oceanprotocol/test-algorithm/master/javascript/algo.js
                             </div>
@@ -498,7 +739,9 @@ const PublishPage = () => {
                         {/* Provider URL */}
                         <div className="flex justify-center">
                             <div className="mb-3 xl:w-96">
-                                <label className="block  mb-1">Provider URL</label>
+                                <label className="block  mb-1">
+                                    Provider URL
+                                </label>
 
                                 <input
                                     value={providerURL}
@@ -515,7 +758,9 @@ const PublishPage = () => {
                         {/* Sample File URL */}
                         <div className="flex justify-center">
                             <div className="mb-3 xl:w-96">
-                                <label className="block  mb-1">Sample File URL</label>
+                                <label className="block  mb-1">
+                                    Sample File URL
+                                </label>
                                 <input
                                     value={sampleFileURL}
                                     onChange={setPublishDetails}
@@ -549,7 +794,9 @@ const PublishPage = () => {
                         {/* DESCRIPTION */}
                         <div className="flex justify-center">
                             <div className="mb-3 xl:w-96">
-                                <label className="block  mb-1">Description</label>
+                                <label className="block  mb-1">
+                                    Description
+                                </label>
                                 <div className="mt-1">
                                     <textarea
                                         value={description}
@@ -568,14 +815,39 @@ const PublishPage = () => {
                         <div className="flex justify-center">
                             <label>Linked to Data Request? : </label>
                             <div>
-                                <input type="radio" value="true" onChange={setPublishDetails} name="isLinkedToRequest" checked={isLinkedToRequest === "true" ? true: false} /> Yes
-                                <input type="radio" value="false" onChange={setPublishDetails} name="isLinkedToRequest" checked={isLinkedToRequest === "false" || !isLinkedToRequest? true: false}/> No
+                                <input
+                                    type="radio"
+                                    value="true"
+                                    onChange={setPublishDetails}
+                                    name="isLinkedToRequest"
+                                    checked={
+                                        isLinkedToRequest === "true"
+                                            ? true
+                                            : false
+                                    }
+                                />{" "}
+                                Yes
+                                <input
+                                    type="radio"
+                                    value="false"
+                                    onChange={setPublishDetails}
+                                    name="isLinkedToRequest"
+                                    checked={
+                                        isLinkedToRequest === "false" ||
+                                        !isLinkedToRequest
+                                            ? true
+                                            : false
+                                    }
+                                />{" "}
+                                No
                             </div>
                         </div>
                         {isLinkedToRequest === "true" && (
                             <div className="flex justify-center">
                                 <div className="mb-3 xl:w-96">
-                                    <label className="block  mb-1">Data Request ID</label>
+                                    <label className="block  mb-1">
+                                        Data Request ID
+                                    </label>
                                     <input
                                         onChange={setPublishDetails}
                                         type="text"
@@ -584,16 +856,16 @@ const PublishPage = () => {
                                         id="dataRequestID"
                                         name="dataRequestID"
                                     />
-                                   
                                 </div>
                             </div>
                         )}
 
-
                         {/* service details */}
                         <div className="flex justify-center">
                             <div className="mb-3 xl:w-96">
-                                <label className="block  mb-1">Service Name</label>
+                                <label className="block  mb-1">
+                                    Service Name
+                                </label>
                                 <input
                                     onChange={setPublishDetails}
                                     type="text"
@@ -618,7 +890,9 @@ const PublishPage = () => {
                                         id="datasetRadio"
                                         value="datasetRadio"
                                     />
-                                    <label className="form-check-label inline-block text-gray-800">Dataset</label>
+                                    <label className="form-check-label inline-block text-gray-800">
+                                        Dataset
+                                    </label>
                                 </div>
                                 <div className="form-check form-check-inline">
                                     <input
@@ -629,7 +903,9 @@ const PublishPage = () => {
                                         id="algorithmRadio"
                                         value="algorithmRadio"
                                     />
-                                    <label className="form-check-label inline-block text-gray-800">Algorithm</label>
+                                    <label className="form-check-label inline-block text-gray-800">
+                                        Algorithm
+                                    </label>
                                 </div>
                             </span>
                         </div>
@@ -640,7 +916,9 @@ const PublishPage = () => {
                             <div>
                                 <div className="flex justify-center">
                                     <div className="mb-3 xl:w-96">
-                                        <label className="block  mb-1">Container Entry Point</label>
+                                        <label className="block  mb-1">
+                                            Container Entry Point
+                                        </label>
                                         <input
                                             onChange={setPublishDetails}
                                             type="text"
@@ -653,7 +931,9 @@ const PublishPage = () => {
                                 </div>
                                 <div className="flex justify-center">
                                     <div className="mb-3 xl:w-96">
-                                        <label className="block  mb-1">Container Image</label>
+                                        <label className="block  mb-1">
+                                            Container Image
+                                        </label>
                                         <input
                                             onChange={setPublishDetails}
                                             type="text"
@@ -666,7 +946,9 @@ const PublishPage = () => {
                                 </div>
                                 <div className="flex justify-center">
                                     <div className="mb-3 xl:w-96">
-                                        <label className="block  mb-1">Container Tag</label>
+                                        <label className="block  mb-1">
+                                            Container Tag
+                                        </label>
                                         <input
                                             onChange={setPublishDetails}
                                             type="text"
@@ -679,7 +961,9 @@ const PublishPage = () => {
                                 </div>
                                 <div className="flex justify-center">
                                     <div className="mb-3 xl:w-96">
-                                        <label className="block  mb-1">Container Checksum</label>
+                                        <label className="block  mb-1">
+                                            Container Checksum
+                                        </label>
                                         <input
                                             onChange={setPublishDetails}
                                             type="text"
@@ -692,11 +976,15 @@ const PublishPage = () => {
                                 </div>
                             </div>
                         ) : (
-                            <div className="flex justify-center">Select an asset type</div>
+                            <div className="flex justify-center">
+                                Select an asset type
+                            </div>
                         )}
 
                         <div className="flex justify-center">
-                            <label className="block  mt-2">Service Type : </label>
+                            <label className="block  mt-2">
+                                Service Type :{" "}
+                            </label>
                             <span>
                                 <div className="form-check form-check-inline">
                                     <input
@@ -707,7 +995,9 @@ const PublishPage = () => {
                                         id="accessRadio"
                                         value="accessRadio"
                                     />
-                                    <label className="form-check-label inline-block text-gray-800">Access</label>
+                                    <label className="form-check-label inline-block text-gray-800">
+                                        Access
+                                    </label>
                                 </div>
 
                                 <div className="form-check form-check-inline">
@@ -719,7 +1009,9 @@ const PublishPage = () => {
                                         id="computeRadio"
                                         value="computeRadio"
                                     />
-                                    <label className="form-check-label inline-block text-gray-800">Compute</label>
+                                    <label className="form-check-label inline-block text-gray-800">
+                                        Compute
+                                    </label>
                                 </div>
                             </span>
                         </div>
