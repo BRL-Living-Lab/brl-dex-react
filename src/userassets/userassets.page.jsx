@@ -5,6 +5,7 @@ import { MdClear } from "react-icons/md";
 import { AccountContext, OceanConfigContext } from "../App";
 import AssetCard from "../marketplace/asset-card.component";
 import { NavLink } from "react-router-dom";
+import { toast } from "react-toastify";
 
 const UserAssetsPage = () => {
     const [dids, setDids] = useState(null);
@@ -52,6 +53,17 @@ const UserAssetsPage = () => {
         },
     };
     const getDids = async (from) => {
+        if (currentAccount === null) {
+            toast.error("Please connect wallet", {
+                position: "top-center",
+                autoClose: false,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+            });
+            return;
+        }
         setIsLoading(true);
         console.log(oceanConfig);
         post_body.query.bool.filter[1].terms.chainId = [oceanConfig.chainId];
@@ -76,22 +88,39 @@ const UserAssetsPage = () => {
         } catch (error) {
             setError(error);
         }
-    }, []);
+    }, [currentAccount]);
+
+    useEffect(() => {
+        if (dids) {
+            console.log(dids);
+            setIsLoading(false);
+        }
+    }, [dids]);
     return (
-        <div className="bg-white rounded-md h-full overflow-y-scroll">
-            {" "}
-            <h1 className="font-light text-xl p-5 text-center">Profile</h1>
-            <h1>Assets</h1>
-            <div className="flex flex-row justify-center items-center overflow-x-scroll p-5 mx-5">
-                {dids &&
-                    dids.map((did) => (
-                        <NavLink to={"/asset/" + did.id}>
-                            <AssetCard key={did.id} did={did} />
-                        </NavLink>
-                    ))}
-            </div>
-            <h1>Data Requests</h1>
-        </div>
+        <>
+            {!isLoading ? (
+                <div className="bg-white rounded-md h-full overflow-y-scroll">
+                    {" "}
+                    <h1 className="font-light text-xl p-5 text-center">
+                        Profile
+                    </h1>
+                    <h1>Assets</h1>
+                    <div className="flex flex-row justify-center items-center overflow-x-scroll p-5 mx-5">
+                        {dids &&
+                            dids.map((did) => (
+                                <NavLink to={"/asset/" + did.id}>
+                                    <AssetCard key={did.id} did={did} />
+                                </NavLink>
+                            ))}
+                    </div>
+                    <h1>Data Requests</h1>
+                </div>
+            ) : (
+                <div className="flex justify-center align-middle items-center h-80v">
+                    <MoonLoader color="#000000" size={30} />
+                </div>
+            )}
+        </>
     );
 };
 
