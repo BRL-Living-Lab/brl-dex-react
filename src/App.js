@@ -99,7 +99,7 @@ function App() {
                                             element={<ComputeDetails />}
                                         ></Route>
                                         <Route
-                                            path="userassets"
+                                            path="profile"
                                             element={<UserAssetsPage />}
                                         ></Route>
                                     </Routes>
