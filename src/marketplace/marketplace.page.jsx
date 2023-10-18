@@ -4,7 +4,7 @@ import { NavLink, useNavigate } from "react-router-dom";
 import { AccountContext, OceanConfigContext } from "../App";
 import AssetCard from "./asset-card.component";
 import { MoonLoader } from "react-spinners";
-
+import { MdClear } from "react-icons/md";
 
 const MarketplacePage = () => {
     const [dids, setDids] = useState(null);
@@ -14,12 +14,13 @@ const MarketplacePage = () => {
     const [usePrevButton, setUsePrevButton] = useState(false);
     const [pageFrom, setPageFrom] = useState(0);
     const { oceanConfig } = useContext(OceanConfigContext);
-    const [searchQuery, setSearchQuery] = useState('');
-    const [filterType, setFilterType] = useState('');
+    const [searchQuery, setSearchQuery] = useState("");
+    const [filterType, setFilterType] = useState("");
     const [showUserAssets, setShowUserAssets] = useState(false);
     const { currentAccount, setCurrentAccount } = useContext(AccountContext);
 
-    const endpoint = "https://v4.aquarius.oceanprotocol.com/api/aquarius/assets/query";
+    const endpoint =
+        "https://v4.aquarius.oceanprotocol.com/api/aquarius/assets/query";
     const post_body = {
         from: 0,
         size: 12,
@@ -51,14 +52,25 @@ const MarketplacePage = () => {
         },
         sort: {
             "metadata.created": {
-                "order": "desc"
-              }
+                order: "desc",
+            },
         },
     };
 
     const getDids = async (from) => {
+        setIsLoading(true);
         console.log(oceanConfig);
         post_body.query.bool.filter[1].terms.chainId = [oceanConfig.chainId];
+
+        if (showUserAssets)
+            post_body.query.bool.must = [
+                {
+                    match: {
+                        "nft.owner": currentAccount,
+                    },
+                },
+            ];
+        else post_body.query.bool.must = [];
 
         // check if there is a search query
         if (searchQuery) {
@@ -82,7 +94,9 @@ const MarketplacePage = () => {
         const response = await axios.post(endpoint, { ...post_body, from });
 
         setDids(response.data.hits.hits.map((data) => data._source));
-    };   
+        if (response.data.hits.hits.length < 12) setUseNextButton(false);
+        else setUseNextButton(true);
+    };
 
     useEffect(() => {
         try {
@@ -100,12 +114,16 @@ const MarketplacePage = () => {
     }, [dids]);
     // update search query and filter from user input
     useEffect(() => {
-    try {
-        getDids();
-    } catch (error) {
-        setError(error);
-    }
+        try {
+            getDids();
+        } catch (error) {
+            setError(error);
+        }
     }, [searchQuery, filterType]);
+
+    useEffect(() => {
+        getDids();
+    }, [showUserAssets]);
 
     const nextButtonClick = (pageFrom) => {
         setIsLoading(true);
@@ -126,11 +144,52 @@ const MarketplacePage = () => {
     };
 
     const filteredDids = showUserAssets
-        ? dids.filter((did) => did.nft.owner === currentAccount )
+        ? dids.filter((did) => did.nft.owner === currentAccount)
         : dids;
 
     return (
         <div>
+            <div className="grid grid-cols-3 gap-x-4 relative ">
+                <div className="relative col-span-2">
+                    {" "}
+                    <input
+                        type="text"
+                        className="w-full border p-2 m-2 rounded-md col-span-2 row-span-2"
+                        placeholder="Search for assets..."
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                    />
+                    {searchQuery && (
+                        <button
+                            className="absolute right-0 top-0 m-2 p-2"
+                            onClick={() => setSearchQuery("")}
+                        >
+                            <MdClear className="text-2xl text-gray-500" />
+                        </button>
+                    )}
+                </div>
+
+                <div className="flex items-center col-span-1">
+                    <label>
+                        <input
+                            type="checkbox"
+                            checked={showUserAssets}
+                            onChange={handleShowUserAssetsChange}
+                            disabled={!currentAccount}
+                        />
+                        <span className="ml-2">Show My Assets</span>
+                    </label>
+                    <select
+                        value={filterType}
+                        onChange={(e) => setFilterType(e.target.value)}
+                        className="border p-2 m-2 rounded-md"
+                    >
+                        <option value="">Assest Type</option>
+                        <option value="algorithm">algorithm</option>
+                        <option value="dataset">dataset</option>
+                    </select>
+                </div>
+            </div>
             {isLoading ? (
                 <div className="flex justify-center align-middle items-center h-80v">
                     <MoonLoader color="#000000" size={30} />
@@ -138,38 +197,6 @@ const MarketplacePage = () => {
             ) : (
                 // </div>
                 <div>
-                    <div className="grid grid-cols-3 gap-x-4">
-                        <input
-                            type="text"
-                            className="border p-2 m-2 rounded-md col-span-2 row-span-2"
-                            placeholder="Search for assets..."s
-                            value={searchQuery}
-                            onChange={(e) => setSearchQuery(e.target.value)}
-                        />
-                        <div className="flex items-center">
-                            <label>
-                                <input
-                                type="checkbox"
-                                checked={showUserAssets}
-                                onChange={handleShowUserAssetsChange}
-                            />
-                                <span className="ml-2">Show My Assets</span>
-                            </label>
-                            <select 
-                                value={filterType} 
-                                onChange={(e) => setFilterType(e.target.value)}
-                                className="border p-2 m-2 rounded-md"
-                            >
-                                <option value="">Assest Type</option>
-                                <option value="algorithm">algorithm</option>
-                                <option value="dataset">dataset</option>
-                            </select>
-                        </div>
-
-                    
-
-                    </div>
-
                     <div className="grid grid-cols-3 gap-x-4">
                         {filteredDids.map((did) => (
                             <NavLink to={"/asset/" + did.id}>
@@ -200,10 +227,16 @@ const MarketplacePage = () => {
                         ))}
                     </div>
                     <div className="w-full flex justify-center gap-5">
-                        <button disabled={!usePrevButton} onClick={() => prevButtonClick(pageFrom - 9)}>
+                        <button
+                            disabled={!usePrevButton}
+                            onClick={() => prevButtonClick(pageFrom - 9)}
+                        >
                             Prev
                         </button>
-                        <button disabled={!useNextButton} onClick={() => nextButtonClick(pageFrom + 9)}>
+                        <button
+                            disabled={!useNextButton}
+                            onClick={() => nextButtonClick(pageFrom + 9)}
+                        >
                             Next
                         </button>
                     </div>
