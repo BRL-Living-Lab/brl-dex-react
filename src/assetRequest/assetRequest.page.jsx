@@ -1,8 +1,6 @@
 import React, { useState } from "react";
 import { toast } from "react-toastify";
-import JSONInput from "react-json-editor-ajrm";
-import locale from "react-json-editor-ajrm/locale/en";
-
+import Switch from "react-switch";
 const DataAssetRequestForm = () => {
     const [formData, setFormData] = useState({
         status: "open",
@@ -10,9 +8,12 @@ const DataAssetRequestForm = () => {
         description: "",
         schema: "",
         instructions: "",
+        dataValidation: false,
     });
 
     const handleChange = (e) => {
+        const value =
+            e.target.type === "checkbox" ? e.target.checked : e.target.value;
         if (e.target.name === "schema" && e.target.value === undefined) {
             toast.error("Invalid JSON input", {
                 position: "top-center",
@@ -24,30 +25,27 @@ const DataAssetRequestForm = () => {
         }
         setFormData({
             ...formData,
-            [e.target.name]: e.target.value,
-        });
-    };
-
-    const handleJSONChange = (change) => {
-        if (!change.jsObject) {
-            toast.error("Invalid JSON input", {
-                position: "top-center",
-                autoClose: 1000,
-                hideProgressBar: false,
-                closeOnClick: true,
-            });
-            return;
-        }
-
-        setFormData({
-            ...formData,
-            schema: JSON.stringify(change.jsObject),
+            [e.target.name]: value,
         });
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         console.log(formData);
+
+
+        try {
+            if (formData.dataValidation)
+                JSON.parse(formData.schema);
+        } catch (error) {
+            toast.error("Invalid JSON input", {
+                position: "top-center",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+            });
+            return;
+        }
 
         try {
             const response = await fetch(
@@ -87,11 +85,18 @@ const DataAssetRequestForm = () => {
         }
     };
 
+    const handleSwitchChange = (checked) => {
+        setFormData({ ...formData, dataValidation: checked });
+    };
+
     return (
-        <div className="flex justify-center  bg-gray-100">
+        <div className="rounded-md h-full overflow-y-scroll">
+            <h1 className="font-light text-xl p-5 text-center">
+                Request Asset{" "}
+            </h1>
             <form
                 onSubmit={handleSubmit}
-                className="flex flex-col space-y-1 mx-auto lg:w-1/2"
+                className="flex flex-col space-y-4 mx-auto lg:w-3/4 bg-white p-5 rounded shadow-lg"
             >
                 <label className="flex flex-col">
                     Title:
@@ -112,18 +117,40 @@ const DataAssetRequestForm = () => {
                         className="border p-2 rounded"
                     />
                 </label>
-                <label className="flex flex-col">
-                    Schema:
-                    {/* <textarea name="schema" value={formData.schema} onChange={handleChange} className="border p-2 rounded" /> */}
-                    <JSONInput
-                        value={formData.schema}
-                        onChange={handleJSONChange}
-                        locale={locale}
-                        height="550px"
-                        width="100%"
-                        style={{ body: { border: "5px solid pink" } }}
-                    />
+                <label className="flex items-center">
+                    <div className="relative">
+                        <Switch
+                            checked={formData.dataValidation}
+                            onChange={handleSwitchChange}
+                            offColor="#808080"
+                            onColor="#86d3ff"
+                            onHandleColor="#2693e6"
+                            handleDiameter={30}
+                            uncheckedIcon={false}
+                            checkedIcon={false}
+                            boxShadow="0px 1px 5px rgba(0, 0, 0, 0.6)"
+                            activeBoxShadow="0px 0px 1px 10px rgba(0, 0, 0, 0.2)"
+                            height={20}
+                            width={48}
+                            className="react-switch"
+                            id="material-switch"
+                        />
+                    </div>
+                    <div className="ml-3 text-gray-700 font-medium">
+                        Enable JSON Schema Validation
+                    </div>
                 </label>
+                {formData.dataValidation && (
+                    <label className="flex flex-col">
+                        Schema:
+                        <textarea
+                            name="schema"
+                            value={formData.schema}
+                            onChange={handleChange}
+                            className="border p-2 rounded"
+                        />
+                    </label>
+                )}
                 <label className="flex flex-col">
                     Instructions:
                     <textarea
