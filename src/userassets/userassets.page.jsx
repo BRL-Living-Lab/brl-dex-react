@@ -13,6 +13,7 @@ const UserAssetsPage = () => {
     const [error, setError] = useState(null);
     const { oceanConfig } = useContext(OceanConfigContext);
     const { currentAccount, setCurrentAccount } = useContext(AccountContext);
+    const [searchQuery, setSearchQuery] = useState("");
 
     const endpoint =
         "https://v4.aquarius.oceanprotocol.com/api/aquarius/assets/query";
@@ -64,7 +65,8 @@ const UserAssetsPage = () => {
             });
             return;
         }
-        setIsLoading(true);
+
+        // setIsLoading(true);
         console.log(oceanConfig);
         post_body.query.bool.filter[1].terms.chainId = [oceanConfig.chainId];
 
@@ -75,6 +77,15 @@ const UserAssetsPage = () => {
                 },
             },
         ];
+
+        if (searchQuery) {
+            post_body.query.bool.filter.push({
+                query_string: {
+                    default_field: "metadata.name",
+                    query: `"${searchQuery}"`,
+                },
+            });
+        }
 
         const response = await axios.post(endpoint, { ...post_body, from });
 
@@ -88,7 +99,7 @@ const UserAssetsPage = () => {
         } catch (error) {
             setError(error);
         }
-    }, [currentAccount]);
+    }, [currentAccount, searchQuery]);
 
     useEffect(() => {
         if (dids) {
@@ -105,6 +116,22 @@ const UserAssetsPage = () => {
                         Profile
                     </h1>
                     <h1>Assets</h1>
+                    <input
+                        type="text"
+                        className="w-full border p-2 m-2 rounded-md col-span-2 row-span-2"
+                        placeholder="Search for assets..."
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                    />
+                    {searchQuery && (
+                        <button
+                            className="absolute right-0 top-0 m-2 p-2"
+                            onClick={() => setSearchQuery("")}
+                        >
+                            <MdClear className="text-2xl text-gray-500" />
+                        </button>
+                    )}
+                    
                     <div className="flex flex-row justify-center items-center overflow-x-scroll p-5 mx-5">
                         {dids &&
                             dids.map((did) => (
