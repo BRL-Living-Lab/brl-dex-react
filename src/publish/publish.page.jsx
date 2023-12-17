@@ -40,11 +40,11 @@ const PublishPage = () => {
         dataRequestID: null,
         serviceType: "",
         serviceName: "",
-        entryPoint: "node $ALGO",
-        image: "node",
-        tag: "alpine:3.16",
+        entryPoint: "python $ALGO",
+        image: "oceanprotocol/algo_dockers",
+        tag: "python-branin",
         checksum:
-            "sha256:d7c1c5566f2eb09a6f16044174f285f3e0d0073a58bfd2f188c71a6decb5fc15",
+            "sha256:8221d20c1c16491d7d56b9657ea09082c0ee4a8ab1a6621fa720da58b09580e4",
     });
 
     useEffect(() => {
@@ -170,11 +170,11 @@ const PublishPage = () => {
             },
             algorithm: {
                 container: {
-                    entrypoint: "node $ALGO",
+                    entrypoint: "python $ALGO",
                     image: "node",
-                    tag: "alpine:3.16",
+                    tag: "oceanprotocol/algo_dockers",
                     checksum:
-                        "sha256:d7c1c5566f2eb09a6f16044174f285f3e0d0073a58bfd2f188c71a6decb5fc15",
+                        "sha256:8221d20c1c16491d7d56b9657ea09082c0ee4a8ab1a6621fa720da58b09580e4",
                 },
             },
         },
@@ -433,7 +433,7 @@ const PublishPage = () => {
 
     const linkWithAssetRequest = async (assetId, dataRequestID) => {
         const response = await fetch(
-            `http://localhost:3000/api/dataRequests/${dataRequestID}`,
+            `http://localhost:${process.env.REACT_APP_SERVER_PORT}/api/dataRequests/${dataRequestID}`,
             {
                 method: "PUT",
                 headers: {
