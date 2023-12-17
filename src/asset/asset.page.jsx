@@ -42,7 +42,8 @@ const AssetPage = () => {
     const [nftDetailsVisible, setNftDetailsVisible] = useState(false);
     const [dataTokensVisible, setDataTokensVisible] = useState(false);
     //const showMintAssetSection = ddo.nft.owner === currentAccount;
-    const endpoint = "https://v4.aquarius.oceanprotocol.com/api/aquarius/assets/ddo/";
+    const endpoint =
+        "https://v4.aquarius.oceanprotocol.com/api/aquarius/assets/ddo/";
 
     useEffect(() => {
         const getDDO = async () => {
@@ -54,11 +55,19 @@ const AssetPage = () => {
                     "https://v4.subgraph.mumbai.oceanprotocol.com/subgraphs/name/oceanprotocol/ocean-subgraph",
                     {
                         query: GET_TOKEN_MINTER,
-                        variables: { id: response1.data.datatokens[i].address.toLowerCase() },
+                        variables: {
+                            id: response1.data.datatokens[
+                                i
+                            ].address.toLowerCase(),
+                        },
                     }
                 );
                 console.log(response2.data.data.token.address);
-                setTokens((tokens) => ({ ...tokens, [response2.data.data.token.address]: response2.data.data.token }));
+                setTokens((tokens) => ({
+                    ...tokens,
+                    [response2.data.data.token.address]:
+                        response2.data.data.token,
+                }));
                 console.log(tokens);
             }
             setDdo(response1.data);
@@ -85,7 +94,10 @@ const AssetPage = () => {
                 num_tokens, // number of datatokens sent to the receiver
                 receiverAddress
             );
-            let receiverBalance = await datatoken.balance(datatokenAddress, receiverAddress);
+            let receiverBalance = await datatoken.balance(
+                datatokenAddress,
+                receiverAddress
+            );
             alert(`Receiver Balance : ${receiverBalance}`);
             console.log(`Receiver balance after mint: ${receiverBalance}`);
         }
@@ -96,7 +108,10 @@ const AssetPage = () => {
         const datatoken = new Datatoken(web3);
         const datatokenAddress = ddo.services[0].datatokenAddress;
         if (window.ethereum) {
-            let receiverBalance = await datatoken.balance(datatokenAddress, currentAccount);
+            let receiverBalance = await datatoken.balance(
+                datatokenAddress,
+                currentAccount
+            );
 
             const initializeData = await ProviderInstance.initialize(
                 ddo.id,
@@ -109,9 +124,12 @@ const AssetPage = () => {
                 alert(initializeData.error);
             } else {
                 const providerFees = {
-                    providerFeeAddress: initializeData.providerFee.providerFeeAddress,
-                    providerFeeToken: initializeData.providerFee.providerFeeToken,
-                    providerFeeAmount: initializeData.providerFee.providerFeeAmount,
+                    providerFeeAddress:
+                        initializeData.providerFee.providerFeeAddress,
+                    providerFeeToken:
+                        initializeData.providerFee.providerFeeToken,
+                    providerFeeAmount:
+                        initializeData.providerFee.providerFeeAmount,
                     v: initializeData.providerFee.v,
                     r: initializeData.providerFee.r,
                     s: initializeData.providerFee.s,
@@ -170,87 +188,120 @@ const AssetPage = () => {
         showMintAssetSection = ddo.nft.owner === currentAccount;
     }
 
-    
-
     // this.can_mint = ddo.nft.owner === currentAccount;
 
     return (
         <div>
             <div className="w-full flex justify-end p-4">
-            <button
-                className="mr-4 border border-blue-500 hover:bg-blue-100 text-blue-500 hover:text-blue-700  py-2 px-4 rounded shadow"
-                onClick={handleModifyAsset}
-            >
-                Modify Asset
-            </button>
+                <button
+                    className="mr-4 border border-blue-500 hover:bg-blue-100 text-blue-500 hover:text-blue-700  py-2 px-4 rounded shadow"
+                    onClick={handleModifyAsset}
+                >
+                    Modify Asset
+                </button>
 
-            {ddo && (
-            <button
-                disabled={ddo.services[0].type === "compute"}
-                className="mr-4 border border-blue-800 hover:bg-blue-200 text-blue-800 hover:text-blue-900  py-2 px-4 rounded shadow"
-                onClick={handleDownloadAsset}
-            >
-                Download Asset
-            </button> )}
-
+                {ddo && (
+                    <button
+                        disabled={ddo.services[0].type === "compute"}
+                        className="mr-4 border border-blue-800 hover:bg-blue-200 text-blue-800 hover:text-blue-900  py-2 px-4 rounded shadow"
+                        onClick={handleDownloadAsset}
+                    >
+                        Download Asset
+                    </button>
+                )}
             </div>
             {isLoading ? (
                 <div className="flex justify-center align-middle items-center h-80v">
                     <MoonLoader color="#000000" size={30} />
                 </div>
-            ) : ( 
+            ) : (
                 <div>
                     <div className="bg-white p-6 rounded-lg shadow-md">
                         <div className="flex justify-between items-center mb-4">
-                        <h1
-                                className="text-2xl font-semibold cursor-pointer"
-                                onClick={() => setAssetDetailsVisible(!assetDetailsVisible)}
-                            >
+                            <h1 className="text-2xl font-semibold cursor-pointer">
                                 Asset details
                             </h1>
-                            </div>
-                    {assetDetailsVisible && (
+                        </div>
+                        {assetDetailsVisible && (
                             <div>
                                 <div className="flex items-center mb-2">
-                                    <label className="w-32 font-semibold">DID:</label>
-                                    <div className="text-gray-600" title={ddo.id}>......{ddo.id.slice(-6)}</div>
+                                    <label className="w-32 font-semibold">
+                                        DID:
+                                    </label>
+                                    <div
+                                        className="text-gray-600"
+                                        title={ddo.id}
+                                    >
+                                        ......{ddo.id.slice(-6)}
+                                    </div>
                                 </div>
                                 <div className="flex items-center mb-2">
-                                    <label className="w-32 font-semibold">NFT Address:</label>
-                                    <div className="text-gray-600">{ddo.nftAddress}</div>
+                                    <label className="w-32 font-semibold">
+                                        NFT Address:
+                                    </label>
+                                    <div className="text-gray-600">
+                                        {ddo.nftAddress}
+                                    </div>
                                 </div>
                                 <div className="flex flex-col mt-6">
-                                    <label className="mb-2 font-semibold">Metadata:</label>
+                                    <label className="mb-2 font-semibold">
+                                        Metadata:
+                                    </label>
                                     <ul className="list-disc ml-6">
                                         <li className="flex items-center">
-                                            <label className="w-32 font-semibold">Created:</label>
+                                            <label className="w-32 font-semibold">
+                                                Created:
+                                            </label>
                                             <div className="text-gray-600">
-                                                {new Date(ddo.metadata.created).toLocaleString()}
+                                                {new Date(
+                                                    ddo.metadata.created
+                                                ).toLocaleString()}
                                             </div>
                                         </li>
                                         <li className="flex items-center">
-                                            <label className="w-32 font-semibold">Updated:</label>
+                                            <label className="w-32 font-semibold">
+                                                Updated:
+                                            </label>
                                             <div className="text-gray-600">
-                                                {new Date(ddo.metadata.updated).toLocaleString()}
+                                                {new Date(
+                                                    ddo.metadata.updated
+                                                ).toLocaleString()}
                                             </div>
                                         </li>
                                         <li className="flex items-center">
-                                            <label className="w-32 font-semibold ">Type:</label>
-                                            <div className="text-gray-600">{ddo.metadata.type}</div>
+                                            <label className="w-32 font-semibold ">
+                                                Type:
+                                            </label>
+                                            <div className="text-gray-600">
+                                                {ddo.metadata.type}
+                                            </div>
                                         </li>
                                         <li className="flex items-center">
-                                            <label className="w-32 font-semibold ">Name:</label>
-                                            <div className="text-gray-600">{ddo.metadata.name}</div>
+                                            <label className="w-32 font-semibold ">
+                                                Name:
+                                            </label>
+                                            <div className="text-gray-600">
+                                                {ddo.metadata.name}
+                                            </div>
                                         </li>
                                         <li className="flex items-center">
-                                            <label className="w-32 font-semibold ">Description:</label>
-                                            <div className="text-gray-600 truncate w-64" title={ddo.metadata.description}>
+                                            <label className="w-32 font-semibold ">
+                                                Description:
+                                            </label>
+                                            <div
+                                                className="text-gray-600 truncate w-64"
+                                                title={ddo.metadata.description}
+                                            >
                                                 {ddo.metadata.description}
                                             </div>
                                         </li>
                                         <li className="flex items-center">
-                                            <label className="w-32 font-semibold ">Author:</label>
-                                            <div className="text-gray-600">{ddo.metadata.author}</div>
+                                            <label className="w-32 font-semibold ">
+                                                Author:
+                                            </label>
+                                            <div className="text-gray-600">
+                                                {ddo.metadata.author}
+                                            </div>
                                         </li>
                                     </ul>
                                 </div>
@@ -260,9 +311,11 @@ const AssetPage = () => {
                     <br></br>
                     <div className="bg-white p-6 rounded-lg shadow-md">
                         <div className="flex justify-between items-center mb-4">
-                        <h1
+                            <h1
                                 className="text-2xl font-semibold cursor-pointer"
-                                onClick={() => setServicesVisible(!servicesVisible)}
+                                onClick={() =>
+                                    setServicesVisible(!servicesVisible)
+                                }
                             >
                                 Services
                             </h1>
@@ -270,24 +323,44 @@ const AssetPage = () => {
                         {servicesVisible && (
                             <div>
                                 {ddo.services.map((service) => (
-                                    <div key={service.id} className="rounded-lg p-4">
+                                    <div
+                                        key={service.id}
+                                        className="rounded-lg p-4"
+                                    >
                                         <div className="flex flex-col mb-4">
-                                        <label className="text-gray-700  mb-2 font-semibold">Type:</label>
-                                        <p className="text-gray-700">{service.type}</p>
+                                            <label className="text-gray-700  mb-2 font-semibold">
+                                                Type:
+                                            </label>
+                                            <p className="text-gray-700">
+                                                {service.type}
+                                            </p>
+                                        </div>
+                                        <div className="flex flex-col mb-4">
+                                            <label className="text-gray-700  mb-2 font-semibold">
+                                                Files:
+                                            </label>
+                                            <p className="text-gray-700">
+                                                {service.files.slice(0, 50)}
+                                            </p>
+                                        </div>
+                                        <div className="flex flex-col mb-4">
+                                            <label className="text-gray-700  mb-2 font-semibold">
+                                                Data Token Address:
+                                            </label>
+                                            <p className="text-gray-700">
+                                                {service.datatokenAddress}
+                                            </p>
+                                        </div>
+                                        <div className="flex flex-col mb-4">
+                                            <label className="text-gray-700  mb-2 font-semibold">
+                                                Service Endpoint:
+                                            </label>
+                                            <p className="text-gray-700">
+                                                {service.serviceEndpoint}
+                                            </p>
+                                        </div>
                                     </div>
-                                    <div className="flex flex-col mb-4">
-                                        <label className="text-gray-700  mb-2 font-semibold">Files:</label>
-                                        <p className="text-gray-700">{service.files.slice(0, 50)}</p>
-                                    </div>
-                                    <div className="flex flex-col mb-4">
-                                        <label className="text-gray-700  mb-2 font-semibold">Data Token Address:</label>
-                                        <p className="text-gray-700">{service.datatokenAddress}</p>
-                                    </div>
-                                    <div className="flex flex-col mb-4">
-                                        <label className="text-gray-700  mb-2 font-semibold">Service Endpoint:</label>
-                                        <p className="text-gray-700">{service.serviceEndpoint}</p>
-                                    </div>
-                                </div>))}
+                                ))}
                             </div>
                         )}
                     </div>
@@ -295,7 +368,9 @@ const AssetPage = () => {
                     <div className="bg-white p-6 rounded-lg shadow-md">
                         <h1
                             className="text-2xl mb-4 font-semibold cursor-pointer"
-                            onClick={() => setNftDetailsVisible(!nftDetailsVisible)}
+                            onClick={() =>
+                                setNftDetailsVisible(!nftDetailsVisible)
+                            }
                         >
                             NFT Details
                         </h1>
@@ -303,100 +378,133 @@ const AssetPage = () => {
                             <div>
                                 <div className="grid grid-cols-2 gap-4">
                                     <div className="col-span-2 sm:col-span-1">
-                                        <label className="block text-gray-700 mb-2 font-semibold">Address:</label>
-                                        <p id="address" className="text-gray-700">
+                                        <label className="block text-gray-700 mb-2 font-semibold">
+                                            Address:
+                                        </label>
+                                        <p
+                                            id="address"
+                                            className="text-gray-700"
+                                        >
                                             {ddo.nft.address}
                                         </p>
                                     </div>
                                     <div className="col-span-2 sm:col-span-1">
-                                <label className="block text-gray-700  mb-2 font-semibold">Name:</label>
-                                <p id="name" className="text-gray-700">
-                                    {ddo.nft.name}
-                                </p>
+                                        <label className="block text-gray-700  mb-2 font-semibold">
+                                            Name:
+                                        </label>
+                                        <p id="name" className="text-gray-700">
+                                            {ddo.nft.name}
+                                        </p>
+                                    </div>
+                                    <div className="col-span-2 sm:col-span-1">
+                                        <label className="block text-gray-700  mb-2 font-semibold">
+                                            Symbol:
+                                        </label>
+                                        <p
+                                            id="symbol"
+                                            className="text-gray-700"
+                                        >
+                                            {ddo.nft.symbol}
+                                        </p>
+                                    </div>
+                                    <div className="col-span-2 sm:col-span-1">
+                                        <label className="block text-gray-700  mb-2 font-semibold">
+                                            State:
+                                        </label>
+                                        <p id="state" className="text-gray-700">
+                                            {ddo.nft.state}
+                                        </p>
+                                    </div>
+                                    <div className="col-span-2 sm:col-span-1">
+                                        <label className="block text-gray-700  mb-2 font-semibold">
+                                            Token URI:
+                                        </label>
+                                        <p
+                                            id="tokenURI"
+                                            className="text-gray-700"
+                                        >
+                                            <a
+                                                href={ddo.nft.tokenURI}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+                                            >
+                                                Click here for the link
+                                            </a>
+                                        </p>
+                                    </div>
+                                    <div className="col-span-2 sm:col-span-1">
+                                        <label className="block text-gray-700  mb-2 font-semibold">
+                                            Owner:
+                                        </label>
+                                        <p id="owner" className="text-gray-700">
+                                            {ddo.nft.owner}
+                                        </p>
+                                    </div>
+                                    <div className="col-span-2 sm:col-span-1">
+                                        <label className="block text-gray-700  mb-2 font-semibold">
+                                            Created:
+                                        </label>
+                                        <p
+                                            id="created"
+                                            className="text-gray-700"
+                                        >
+                                            {new Date(
+                                                ddo.nft.created
+                                            ).toLocaleString()}
+                                        </p>
+                                    </div>
+                                </div>
                             </div>
-                            <div className="col-span-2 sm:col-span-1">
-                                <label className="block text-gray-700  mb-2 font-semibold">Symbol:</label>
-                                <p id="symbol" className="text-gray-700">
-                                    {ddo.nft.symbol}
-                                </p>
-                            </div>
-                            <div className="col-span-2 sm:col-span-1">
-                                <label className="block text-gray-700  mb-2 font-semibold">State:</label>
-                                <p id="state" className="text-gray-700">
-                                    {ddo.nft.state}
-                                </p>
-                                </div>
-                                <div className="col-span-2 sm:col-span-1">
-                                    <label className="block text-gray-700  mb-2 font-semibold">Token URI:</label>
-                                    <p id="tokenURI" className="text-gray-700">
-                                        <a href={ddo.nft.tokenURI} target="_blank" rel="noopener noreferrer" className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-                                            Click here for the link
-                                        </a>
-                                    </p>
-                                </div>
-                            <div className="col-span-2 sm:col-span-1">
-                                <label className="block text-gray-700  mb-2 font-semibold">Owner:</label>
-                                <p id="owner" className="text-gray-700">
-                                    {ddo.nft.owner}
-                                </p>
-                                </div>
-                                <div className="col-span-2 sm:col-span-1">
-                                    <label className="block text-gray-700  mb-2 font-semibold">Created:</label>
-                                    <p id="created" className="text-gray-700">
-                                        {new Date(ddo.nft.created).toLocaleString()}
-                                    </p>
-                                </div>
-                                </div>
-                            </div>
-                            )}
-                        </div>
-                    <br />
-                    { showMintAssetSection && (
-                    <div className="bg-white p-6 rounded-lg shadow-md">
-                        <div className="flex justify-between items-center mb-4">
-                            <h1
-                                className="text-2xl mb-4 font-semibold cursor-pointer"
-                            >
-                                Mint Asset
-                            </h1>
-
-                            <div className="flex items-center">
-                                <input
-                                    value={receiver_address}
-                                    onChange={setMintDetails}
-                                    type="text"
-                                    name="receiver_address"
-                                    id="receiver_address"
-                                    placeholder="Receiver Address"
-                                    className="w-64 px-3 py-2 mr-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline"
-                                />
-                                <input
-                                    value={num_tokens}
-                                    onChange={setMintDetails}
-                                    type="number"
-                                    name="num_tokens"
-                                    id="num_tokens"
-                                    placeholder="Tokens"
-                                    className="w-32 px-3 py-2 mr-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline"
-                                />
-                                <button
-                                    className="bg-blue-500 hover:bg-blue-400 text-white  py-2 px-4 rounded"
-                                    type="submit"
-                                    onClick={mintDatatoken}
-                                    // disabled={!this.input.value}
-                                >
-                                    Mint
-                                </button>
-                            </div>
-                        </div>
+                        )}
                     </div>
+                    <br />
+                    {showMintAssetSection && (
+                        <div className="bg-white p-6 rounded-lg shadow-md">
+                            <div className="flex justify-between items-center mb-4">
+                                <h1 className="text-2xl mb-4 font-semibold cursor-pointer">
+                                    Mint Asset
+                                </h1>
+
+                                <div className="flex items-center">
+                                    <input
+                                        value={receiver_address}
+                                        onChange={setMintDetails}
+                                        type="text"
+                                        name="receiver_address"
+                                        id="receiver_address"
+                                        placeholder="Receiver Address"
+                                        className="w-64 px-3 py-2 mr-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline"
+                                    />
+                                    <input
+                                        value={num_tokens}
+                                        onChange={setMintDetails}
+                                        type="number"
+                                        name="num_tokens"
+                                        id="num_tokens"
+                                        placeholder="Tokens"
+                                        className="w-32 px-3 py-2 mr-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline"
+                                    />
+                                    <button
+                                        className="bg-blue-500 hover:bg-blue-400 text-white  py-2 px-4 rounded"
+                                        type="submit"
+                                        onClick={mintDatatoken}
+                                        // disabled={!this.input.value}
+                                    >
+                                        Mint
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
                     )}
                     <br />
                     <div className="bg-white p-6 rounded-lg shadow-md">
                         <div className="flex justify-between items-center mb-4">
                             <h1
                                 className="text-2xl mb-4 font-semibold cursor-pointer"
-                                onClick={() => setDataTokensVisible(!dataTokensVisible)}
+                                onClick={() =>
+                                    setDataTokensVisible(!dataTokensVisible)
+                                }
                             >
                                 Data Tokens
                             </h1>
@@ -406,30 +514,49 @@ const AssetPage = () => {
                             <div>
                                 <div className="grid grid-cols-2 gap-4 mb-4">
                                     {ddo.datatokens.map((datatoken) => (
-                                        <div key={datatoken.address} className="rounded-lg p-4">
+                                        <div
+                                            key={datatoken.address}
+                                            className="rounded-lg p-4"
+                                        >
                                             <div className="flex flex-col mb-4">
-                                            <label className="text-gray-700  mb-2 font-semibold">Address:</label>
-                                        <p className="text-gray-700">{datatoken.address}</p>
+                                                <label className="text-gray-700  mb-2 font-semibold">
+                                                    Address:
+                                                </label>
+                                                <p className="text-gray-700">
+                                                    {datatoken.address}
+                                                </p>
+                                            </div>
+                                            <div className="flex flex-col mb-4">
+                                                <label className="text-gray-700  mb-2 font-semibold">
+                                                    Name:
+                                                </label>
+                                                <p className="text-gray-700">
+                                                    {datatoken.name}
+                                                </p>
+                                            </div>
+                                            <div className="flex flex-col mb-4">
+                                                <label className="text-gray-700  mb-2 font-semibold">
+                                                    Symbol:
+                                                </label>
+                                                <p className="text-gray-700">
+                                                    {datatoken.symbol}
+                                                </p>
+                                            </div>
+                                            <div className="flex flex-col mb-4">
+                                                <label className="text-gray-700  mb-2 font-semibold">
+                                                    Service ID:
+                                                </label>
+                                                <p className="text-gray-700">
+                                                    {datatoken.serviceId}
+                                                </p>
+                                            </div>
                                         </div>
-                                        <div className="flex flex-col mb-4">
-                                            <label className="text-gray-700  mb-2 font-semibold">Name:</label>
-                                            <p className="text-gray-700">{datatoken.name}</p>
-                                        </div>
-                                        <div className="flex flex-col mb-4">
-                                            <label className="text-gray-700  mb-2 font-semibold">Symbol:</label>
-                                            <p className="text-gray-700">{datatoken.symbol}</p>
-                                        </div>
-                                        <div className="flex flex-col mb-4">
-                                            <label className="text-gray-700  mb-2 font-semibold">Service ID:</label>
-                                            <p className="text-gray-700">{datatoken.serviceId}</p>
-                                        </div>
-                                    </div>
-                                ))}
+                                    ))}
+                                </div>
                             </div>
-                        </div>
-                    )}
+                        )}
+                    </div>
                 </div>
-            </div>
             )}
         </div>
     );
