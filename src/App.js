@@ -18,6 +18,7 @@ import ComputeDetails from "./compute/computeDetails.page";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import UserAssetsPage from "./userassets/userassets.page";
+import FMLPage from "./fml/fml.page";
 
 let oceanConfig = new ConfigHelper().getConfig(
     process.env.REACT_APP_OCEAN_NETWORK
@@ -26,12 +27,12 @@ oceanConfig.providerUri = "https://v4.provider.mumbai.oceanprotocol.com";
 
 export const AccountContext = createContext({
     currentAccount: null,
-    setCurrentAccount: () => {},
+    setCurrentAccount: () => { },
 });
 export const OceanConfigContext = createContext(oceanConfig);
 export const AutomationContext = createContext({
     usingAutomation: false,
-    setUsingAutomation: () => {},
+    setUsingAutomation: () => { },
 });
 
 const queryClient = new QueryClient();
@@ -101,6 +102,10 @@ function App() {
                                         <Route
                                             path="profile"
                                             element={<UserAssetsPage />}
+                                        ></Route>
+                                        <Route
+                                            path="fml"
+                                            element={<FMLPage />}
                                         ></Route>
                                     </Routes>
                                 </div>
