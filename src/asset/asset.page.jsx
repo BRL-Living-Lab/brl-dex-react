@@ -222,7 +222,7 @@ const AssetPage = () => {
                                 Asset details
                             </h1>
                         </div>
-                        {assetDetailsVisible && (
+                        {
                             <div>
                                 <div className="flex items-center mb-2">
                                     <label className="w-32 font-semibold">
@@ -232,7 +232,7 @@ const AssetPage = () => {
                                         className="text-gray-600"
                                         title={ddo.id}
                                     >
-                                        ......{ddo.id.slice(-6)}
+                                        {ddo.id}
                                     </div>
                                 </div>
                                 <div className="flex items-center mb-2">
@@ -306,7 +306,7 @@ const AssetPage = () => {
                                     </ul>
                                 </div>
                             </div>
-                        )}
+                        }
                     </div>
                     <br></br>
                     <div className="bg-white p-6 rounded-lg shadow-md">

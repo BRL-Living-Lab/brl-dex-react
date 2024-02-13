@@ -15,10 +15,12 @@ app.use(cors());
 const dataRequestRoutes = require("./routes/dataRequest.routes");
 const assetRoutes = require("./routes/asset.routes");
 const userRoutes = require("./routes/user.routes");
+const fmlRequestRoutes = require("./routes/fmlRequest.routes");
 
 app.use("/api", dataRequestRoutes);
 app.use("/api", assetRoutes);
 app.use("/api", userRoutes);
+app.use("/api", fmlRequestRoutes);
 
 app.listen(port, () => {
     console.log(`Server is running on port ${port}`);

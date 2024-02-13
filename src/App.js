@@ -19,6 +19,7 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import UserAssetsPage from "./userassets/userassets.page";
 import FMLPage from "./fml/fml.page";
+import MyFMLComputesPage from "./fml/my-fml-computes.page";
 
 let oceanConfig = new ConfigHelper().getConfig(
     process.env.REACT_APP_OCEAN_NETWORK
@@ -106,6 +107,11 @@ function App() {
                                         <Route
                                             path="fml"
                                             element={<FMLPage />}
+                                        ></Route>
+
+                                        <Route
+                                            path="fmlStatus"
+                                            element={<MyFMLComputesPage />}
                                         ></Route>
                                     </Routes>
                                 </div>

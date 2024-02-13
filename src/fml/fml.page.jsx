@@ -10,21 +10,16 @@ import Web3 from "web3";
 import { AccountContext, OceanConfigContext } from "../App";
 import { NavLink } from "react-router-dom";
 import { set } from "mongoose";
+import FMLAlgorithm from "./algorithm.component";
+import FMLDataset from "./dataset.component";
+import axios from "axios";
+import { toast } from "react-toastify";
 
 const FMLPage = () => {
     const { oceanConfig } = useContext(OceanConfigContext);
-
-    const [isDatasetDDOLoading, setIsDatasetDDOLoading] = useState(true);
-    const [isAlgorithmDDOLoading, setIsAlgorithmDDOLoading] = useState(true);
-    const [initiatedJobId, setInitiatedJobId] = useState(null);
-
-    const [datasetService, setDatasetService] = useState(null);
-    const [algorithmService, setAlgorithmService] = useState(null);
-
-    const [datasetBalance, setDatasetBalance] = useState(null);
-    const [algorithmBalance, setAlgorithmBalance] = useState(null);
-
     const { currentAccount, _ } = useContext(AccountContext);
+
+    const [startCompute, setStartCompute] = useState(false);
 
     const [computeData, setComputeData] = useState({
         datasets: [
@@ -36,16 +31,30 @@ const FMLPage = () => {
                 datasetBalance: null,
             },
         ],
-        algorithmDID: "",
-        confirmDatasetDID: false,
-        confirmAlgorithmDID: false,
-        datasetDDO: null,
-        algorithmDDO: null,
-        algorithmBalance: null,
+        algorithm: {
+            algorithmDID: "",
+            confirmAlgorithmDID: false,
+            algorithmDDO: null,
+            algorithmBalance: null,
+            algorithmService: null,
+        },
     });
 
-    const setComputeDetails = (e, index) => {
+    const setAlgorithmDetails = (e) => {
+        console.log(e.target);
         const { name, value } = e.target;
+        setComputeData((prevData) => ({
+            ...prevData,
+            algorithm: {
+                ...prevData.algorithm,
+                [name]: value,
+            },
+        }));
+    };
+
+    const setDatasetDetails = (e, index) => {
+        const { name, value } = e.target;
+        console.log({ name, value, index });
 
         if (index === undefined) {
             setComputeData((prevData) => ({
@@ -84,87 +93,6 @@ const FMLPage = () => {
             datasets: prevData.datasets.filter((_, i) => i !== index),
         }));
     };
-
-    const getDDOs = async (assetType, index) => {
-        const aquarius = new Aquarius(oceanConfig.metadataCacheUri);
-        let ddo;
-
-        if (assetType === "datasets") {
-            ddo = await aquarius.resolve(
-                computeData[assetType][index].datasetDID
-            );
-            setComputeData((prevData) => ({
-                ...prevData,
-                datasets: prevData.datasets.map((dataset, i) =>
-                    i === index ? { ...dataset, datasetDDO: ddo } : dataset
-                ),
-            }));
-        } else {
-            ddo = await aquarius.resolve(computeData[assetType]);
-            setComputeData((prevData) => ({
-                ...prevData,
-                algorithmDDO: ddo,
-            }));
-        }
-
-        // if (assetType === "datasetDID") {
-        //     setComputeData({
-        //         ...computeData,
-        //         datasetDDO: ddo,
-        //     });
-        // } else if (assetType === "algorithmDID") {
-        //     setComputeData({
-        //         ...computeData,
-        //         algorithmDDO: ddo,
-        //     });
-        // }
-        console.log(ddo);
-    };
-
-    useEffect(() => {
-        if (computeData.confirmAlgorithmDID) getDDOs("algorithmDID");
-    }, [computeData.confirmAlgorithmDID]);
-
-    const getBalance = async (assetType, index) => {
-        const datatoken = new Datatoken(new Web3(window.ethereum));
-        let balance;
-        console.log(assetType);
-        if (assetType === "datasets") {
-            console.log(computeData[assetType][index]);
-            balance = await datatoken.balance(
-                computeData[assetType][index].datasetDDO.datatokens[0].address,
-                currentAccount
-            );
-        } else
-            balance = await datatoken.balance(
-                computeData[assetType].datatokens[0].address,
-                currentAccount
-            );
-        if (assetType === "datasets") {
-            setComputeData((prevData) => ({
-                ...prevData,
-                datasets: prevData.datasets.map((dataset, i) =>
-                    i === index
-                        ? {
-                              ...dataset,
-                              datasetBalance: balance,
-                          }
-                        : dataset
-                ),
-            }));
-        } else if (assetType === "algorithmDDO") {
-            console.log(computeData[assetType], balance);
-            setComputeData((prevData) => ({
-                ...prevData,
-                algorithmBalance: balance,
-            }));
-        }
-    };
-
-    useEffect(() => {
-        if (datasetService !== null) getBalance("datasetDDO");
-        if (algorithmService !== null) getBalance("algorithmDDO");
-    }, [datasetService, algorithmService]);
 
     async function handleOrder(
         order,
@@ -212,7 +140,19 @@ const FMLPage = () => {
     }
 
     const createCompute = async () => {
+        setStartCompute(true);
         const web3 = new Web3(window.ethereum);
+
+        // create new fml request id in the backend database using axios post request
+
+        const fmlRequest = await axios.post(
+            `http://localhost:${process.env.REACT_APP_SERVER_PORT}/api/fmlRequests`,
+            {
+                userAddress: currentAccount,
+            }
+        );
+
+        console.log(fmlRequest);
 
         console.log("Compute Environments:", oceanConfig.providerUri);
         const computeEnvs = await ProviderInstance.getComputeEnvironments(
@@ -247,10 +187,13 @@ const FMLPage = () => {
                 },
             ];
             const dtAddressArray = [datasetDDO.services[0].datatokenAddress];
+            console.log({ algoddo: computeData.algorithm.algorithmDDO });
             const algo = {
-                documentId: computeData.algorithmDDO.id,
+                documentId: computeData.algorithm.algorithmDDO.id,
                 serviceId:
-                    computeData.algorithmDDO.services[algorithmService].id,
+                    computeData.algorithm.algorithmDDO.services[
+                        computeData.algorithm.algorithmService
+                    ].id,
             };
 
             const providerInitializeComputeResults =
@@ -267,7 +210,7 @@ const FMLPage = () => {
 
             algo.transferTxId = await handleOrder(
                 providerInitializeComputeResults.algorithm,
-                computeData.algorithmDDO.services[0].datatokenAddress,
+                computeData.algorithm.algorithmDDO.services[0].datatokenAddress,
                 currentAccount,
                 computeEnv.consumerAddress,
                 0
@@ -310,34 +253,32 @@ const FMLPage = () => {
                 oceanConfig.providerUri,
                 currentAccount,
                 computeJobId,
-                computeData.datasetDDO.id
+                computeData.datasets[i].datasetDDO.id
             );
 
             console.log("Current status of the compute job: ", jobStatus);
+
+            let fmlRequestUpdate = await axios.put(
+                `http://localhost:${process.env.REACT_APP_SERVER_PORT}/api/fmlRequests/${fmlRequest.data._id}`,
+                {
+                    jobId: computeJobId,
+                }
+            );
+
+            console.log(fmlRequestUpdate);
             // setInitiatedJobId(jobStatus[0].jobId);
+            toast.success(`Compute job for dataset:${i} created`, {
+                position: "bottom-right",
+                autoClose: 2000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+            });
         }
     };
 
-    const removeDDO = (assetType, index) => {
-        if (assetType === "datasets") {
-            setComputeData((prevData) => ({
-                ...prevData,
-                datasets: prevData.datasets.map((dataset, i) =>
-                    i === index
-                        ? {
-                              ...dataset,
-                              datasetDDO: null,
-                          }
-                        : dataset
-                ),
-            }));
-        } else if (assetType === "algorithmDDO") {
-            setComputeData((prevData) => ({
-                ...prevData,
-                algorithmDDO: null,
-            }));
-        }
-    };
+    console.log(computeData);
 
     return (
         <div className="bg-white rounded-md h-full overflow-y-scroll">
@@ -346,217 +287,20 @@ const FMLPage = () => {
             </h1>
 
             <div>
-                <div>
-                    <h2 className="font-light text-xl text p-5">Algorithm</h2>
-
-                    <label className="font-semibold p-5">Algorithm DID:</label>
-                    <div className="flex items-center space-x-2 p-5">
-                        <input
-                            type="text"
-                            className="w-1/2 rounded-md border-gray-400 border-solid border-2 px-3 py-2 bg-gray-50"
-                            value={computeData.algorithmDID}
-                            onChange={setComputeDetails}
-                            name="algorithmDID"
-                            disabled={computeData.confirmAlgorithmDID}
-                            placeholder="Enter Algorithm DID"
-                        />
-                        {computeData.algorithmDID === "" ? (
-                            ""
-                        ) : (
-                            <button
-                                onClick={() => {
-                                    console.log(
-                                        computeData.confirmAlgorithmDID
-                                    );
-                                    setComputeData({
-                                        ...computeData,
-                                        confirmAlgorithmDID:
-                                            !computeData.confirmAlgorithmDID,
-                                    });
-                                }}
-                                className="p-1 rounded-md bg-gray-200 hover:bg-gray-300 focus:outline-none"
-                            >
-                                {computeData.confirmAlgorithmDID ? (
-                                    <AiFillCheckSquare />
-                                ) : (
-                                    <AiOutlineCheckSquare />
-                                )}
-                            </button>
-                        )}
-                    </div>
-
-                    {computeData.algorithmDDO === null ? (
-                        ""
-                    ) : (
-                        <div className="mt-1">
-                            <h2 className="font-light p-1">Select Service</h2>
-                            {computeData.algorithmDDO.services.map(
-                                (service, index) => {
-                                    return (
-                                        <div className="flex items-center mt-1">
-                                            <input
-                                                type="radio"
-                                                name="algorithmService"
-                                                value={index}
-                                                onChange={(e) =>
-                                                    setAlgorithmService(
-                                                        e.target.value
-                                                    )
-                                                }
-                                                id={`service-${index}`}
-                                                className="mr-2"
-                                            />
-                                            <label>
-                                                {service.type} - {service.id} -{" "}
-                                                {index}
-                                            </label>
-                                        </div>
-                                    );
-                                }
-                            )}
-                        </div>
-                    )}
-                    {algorithmService === null ? (
-                        ""
-                    ) : (
-                        <div>
-                            <p>
-                                Service Datatoken:{" "}
-                                {
-                                    computeData.algorithmDDO.datatokens[
-                                        algorithmService
-                                    ].name
-                                }{" "}
-                                (
-                                {
-                                    computeData.algorithmDDO.datatokens[
-                                        algorithmService
-                                    ].symbol
-                                }
-                                ) Balance: {computeData.algorithmBalance}
-                            </p>
-                        </div>
-                    )}
-                </div>
-
+                <FMLAlgorithm
+                    computeData={computeData}
+                    setAlgorithmDetails={setAlgorithmDetails}
+                />
                 <div>Add Datasets:</div>
                 <div>
                     {computeData.datasets.map((dataset, index) => (
-                        <div key={index}>
-                            <h2 className="font-light text-xl p-5">
-                                Dataset {index + 1}
-                            </h2>
-                            {/* ... Other dataset fields ... */}
-                            <input
-                                type="text"
-                                className="w-1/2 rounded-md border-gray-400 border-solid border-2 px-3 py-2 bg-gray-50"
-                                value={dataset.datasetDID}
-                                onChange={(e) => setComputeDetails(e, index)}
-                                name="datasetDID"
-                                disabled={dataset.confirmDatasetDID}
-                                placeholder={`Enter dataset ${index + 1} DID`}
-                            />
-                            {dataset.datasetDID === "" ? (
-                                ""
-                            ) : (
-                                <>
-                                    {dataset.datasetDDO ? (
-                                        <button
-                                            onClick={() => {
-                                                removeDDO("datasets", index);
-                                                // console.log(
-                                                //     "here",
-                                                //     dataset.confirmDatasetDID
-                                                // );
-                                                // setComputeData({
-                                                //     ...computeData,
-                                                //     confirmDatasetDID:
-                                                //         !computeData.confirmDatasetDID,
-                                                // });
-                                            }}
-                                            className="p-1 rounded-md bg-gray-200 hover:bg-gray-300 focus:outline-none"
-                                        >
-                                            <AiFillCheckSquare />
-                                        </button>
-                                    ) : (
-                                        <button
-                                            onClick={() => {
-                                                getDDOs("datasets", index);
-                                                // console.log(
-                                                //     "here",
-                                                //     dataset.confirmDatasetDID
-                                                // );
-                                                // setComputeData({
-                                                //     ...computeData,
-                                                //     confirmDatasetDID:
-                                                //         !computeData.confirmDatasetDID,
-                                                // });
-                                            }}
-                                            className="p-1 rounded-md bg-gray-200 hover:bg-gray-300 focus:outline-none"
-                                        >
-                                            <AiOutlineCheckSquare />
-                                        </button>
-                                    )}
-                                </>
-                            )}
-                            {dataset.datasetDDO === null ? (
-                                ""
-                            ) : (
-                                <div className="mt-1">
-                                    <h2 className="font-light p-1">
-                                        Select Service
-                                    </h2>
-                                    {dataset.datasetDDO.services.map(
-                                        (service, serviceIndex) => {
-                                            return (
-                                                <div className="flex items-center mt-1">
-                                                    <input
-                                                        type="checkbox"
-                                                        name="datasetService"
-                                                        value={serviceIndex}
-                                                        onChange={(e) =>
-                                                            getBalance(
-                                                                "datasets",
-                                                                index
-                                                            )
-                                                        }
-                                                        id={`service-${index}`}
-                                                        className="mr-2"
-                                                    />
-                                                    <label>
-                                                        {service.type} -{" "}
-                                                        {service.id} -{" "}
-                                                        {serviceIndex}
-                                                    </label>
-                                                </div>
-                                            );
-                                        }
-                                    )}
-                                </div>
-                            )}
-                            {dataset.datasetBalance === null ? (
-                                ""
-                            ) : (
-                                <div className="p-1">
-                                    <p>
-                                        Service Datatoken:{" "}
-                                        {dataset.datasetDDO.datatokens[0].name}{" "}
-                                        (
-                                        {
-                                            dataset.datasetDDO.datatokens[0]
-                                                .symbol
-                                        }
-                                        ) Balance: {dataset.datasetBalance}
-                                    </p>
-                                </div>
-                            )}
-                            <button
-                                onClick={() => handleDeleteDataset(index)}
-                                className="p-1 rounded-md bg-red-500 hover:bg-red-600 focus:outline-none text-white"
-                            >
-                                Delete
-                            </button>
-                        </div>
+                        <FMLDataset
+                            key={index}
+                            computeData={computeData}
+                            index={index}
+                            setDatasetDetails={setDatasetDetails}
+                            handleDeleteDataset={handleDeleteDataset}
+                        />
                     ))}
                     <button
                         onClick={handleAddDataset}
@@ -570,9 +314,17 @@ const FMLPage = () => {
                 <button
                     className="bg-purple-700 items-center mt-6 hover:bg-purple-800 text-white  py-2 px-4 rounded w-1/7"
                     onClick={createCompute}
+                    disabled={!startCompute}
                 >
                     Create FML Compute
                 </button>
+                {startCompute && (
+                    <div className="flex items-center justify-center">
+                        <p className="text-green-800">
+                            FML Compute is being Created
+                        </p>
+                    </div>
+                )}
             </div>
         </div>
     );

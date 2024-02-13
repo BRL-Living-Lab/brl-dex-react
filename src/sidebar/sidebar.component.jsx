@@ -12,6 +12,7 @@ const Sidebar = () => {
                 <SidebarItem to="createCompute" text="New Compute Job" />
                 <SidebarItem to="computeStatus" text="Compute Status" />
                 <SidebarItem to="fml" text="Federated Learning" />
+                <SidebarItem to="fmlStatus" text="My FML Computes" />
             </div>
             <div className="flex flex-col justify-start text-left w-full mb-5">
                 <SidebarItem to="profile" text="Profile" />
