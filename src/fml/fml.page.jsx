@@ -14,6 +14,7 @@ import FMLAlgorithm from "./algorithm.component";
 import FMLDataset from "./dataset.component";
 import axios from "axios";
 import { toast } from "react-toastify";
+import { MoonLoader } from "react-spinners";
 
 const FMLPage = () => {
     const { oceanConfig } = useContext(OceanConfigContext);
@@ -276,6 +277,7 @@ const FMLPage = () => {
                 draggable: true,
             });
         }
+        setStartCompute(false);
     };
 
     console.log(computeData);
@@ -314,17 +316,16 @@ const FMLPage = () => {
                 <button
                     className="bg-purple-700 items-center mt-6 hover:bg-purple-800 text-white  py-2 px-4 rounded w-1/7"
                     onClick={createCompute}
-                    disabled={!startCompute}
+                    disabled={startCompute}
                 >
-                    Create FML Compute
+                    {startCompute ? (
+                        <div className="flex items-center justify-center">
+                            <MoonLoader color="#ffffff" size={30} />
+                        </div>
+                    ) : (
+                        "Create FML Compute"
+                    )}
                 </button>
-                {startCompute && (
-                    <div className="flex items-center justify-center">
-                        <p className="text-green-800">
-                            FML Compute is being Created
-                        </p>
-                    </div>
-                )}
             </div>
         </div>
     );
